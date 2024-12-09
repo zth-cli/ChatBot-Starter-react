@@ -80,14 +80,14 @@ export function ChatTextArea({
             title="工作台"
             size="icon"
             className="text-gray-400 hover:text-gray-600">
-            <Box className="size-5" />
+            <Box className="!size-5" />
           </Button>
           <Button
             variant="ghost"
             title="附件"
             size="icon"
             className="text-gray-400 hover:text-gray-600">
-            <Paperclip className="size-5" />
+            <Paperclip className="!size-5" />
           </Button>
           <Button
             disabled={!value && !loading}
@@ -96,7 +96,7 @@ export function ChatTextArea({
             size="icon"
             className="text-gray-400 hover:text-gray-600"
             onClick={handleSend}>
-            {!loading ? <Send className="size-5" /> : <StopIcon className="size-9" />}
+            {!loading ? <Send className="!size-5" /> : <StopIcon className="!size-8" />}
           </Button>
         </div>
       </div>

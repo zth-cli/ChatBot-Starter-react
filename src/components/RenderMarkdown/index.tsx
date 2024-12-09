@@ -50,7 +50,7 @@ export const RenderMarkdown: React.FC<RenderMarkdownProps> = ({
         if (lastContent !== html) {
           containerRef.current.innerHTML = html
           lastContent = html
-          mountCodeBlocks()
+          // mountCodeBlocks()
         }
       }
     }

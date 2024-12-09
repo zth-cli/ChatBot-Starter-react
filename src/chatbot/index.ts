@@ -22,7 +22,18 @@ const DEFAULT_CONFIG: ChatConfig = {
     max: 20
   }
 }
-
+// 初始聊天历史状态
+const createInitialChatHistory = (): ChatHistory => ({
+  id: crypto.randomUUID(),
+  children: [],
+  loading: false,
+  name: '新会话',
+  createTime: new Date().toISOString(),
+  updateTime: new Date().toISOString(),
+  userId: '1',
+  isFavorite: false,
+  isTemp: true
+})
 // 创建新消息
 const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage => ({
   id: crypto.randomUUID(),
@@ -36,10 +47,9 @@ const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage
 export const useChat: UseChatHookFn = () => {
   const sessionManagerRef = useRef<ChatSessionManager<ChatCore>>()
   const chatStore = useChatStore()
-  const currentChat = useMemo(
-    () => chatStore.currentChatHistory,
-    [chatStore.currentChatHistory?.id]
-  )
+  const currentChat = useMemo(() => {
+    return chatStore.currentChatHistory || createInitialChatHistory()
+  }, [chatStore.currentChatHistory?.id])
   // API客户端初始化
   const baseUrl = import.meta.env.DEV ? '/api' : ''
   const apiClient = useMemo(

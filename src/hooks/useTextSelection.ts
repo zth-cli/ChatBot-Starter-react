@@ -6,16 +6,16 @@ interface SelectionInfo {
   endOffset: number
 }
 
-export function useTextSelection(containerRef: RefObject<HTMLElement>) {
+export function useTextSelection(containerRef: RefObject<HTMLElement | null>) {
   const getSelectionInfo = (): SelectionInfo | null => {
     const selection = window.getSelection()
-    if (!selection || !containerRef.current?.contains(selection.anchorNode)) {
+    if (!selection || !containerRef?.current?.contains(selection.anchorNode)) {
       return null
     }
 
     const range = selection.getRangeAt(0)
     const preSelectionRange = range.cloneRange()
-    preSelectionRange.selectNodeContents(containerRef.current)
+    preSelectionRange.selectNodeContents(containerRef?.current)
     preSelectionRange.setEnd(range.startContainer, range.startOffset)
     const startOffset = preSelectionRange.toString().length
 
@@ -27,12 +27,12 @@ export function useTextSelection(containerRef: RefObject<HTMLElement>) {
   }
 
   const setSelectionByInfo = (info: SelectionInfo) => {
-    if (!info || !containerRef.current) {
+    if (!info || !containerRef?.current) {
       return
     }
 
     const textNodes: Node[] = []
-    const walk = document.createTreeWalker(containerRef.current, NodeFilter.SHOW_TEXT, null)
+    const walk = document.createTreeWalker(containerRef?.current, NodeFilter.SHOW_TEXT, null)
     let node: Node | null
     while ((node = walk.nextNode())) {
       textNodes.push(node)

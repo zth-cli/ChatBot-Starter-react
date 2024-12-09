@@ -25,7 +25,8 @@ const createMarkdownInstance = () => {
   // 优化 fence 渲染规则
   md.renderer.rules.fence = (tokens: Token[], idx: number) => {
     const token = tokens[idx]
-    return `<div class="react-code-block" data-code="${encodeURIComponent(token.content)}" data-lang="${token.info.trim()}"></div>`
+    // return `<div class="react-code-block" data-code="${encodeURIComponent(token.content)}" data-lang="${token.info.trim()}"></div>`
+    return `<pre class='p-4 bg-gray-100 dark:bg-gray-800 rounded-md'><code class="language-${token.info.trim()}">${token.content}</code></pre>`
   }
 
   return md

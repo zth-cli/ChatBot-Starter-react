@@ -5,7 +5,7 @@ interface Position {
   y: number
 }
 
-export function useLastTextPosition(containerRef: RefObject<HTMLElement>) {
+export function useLastTextPosition(containerRef: RefObject<HTMLElement | null>) {
   const [position, setPosition] = useState<Position | null>(null)
 
   // 递归查找最后一个文本节点
@@ -27,7 +27,7 @@ export function useLastTextPosition(containerRef: RefObject<HTMLElement>) {
 
   const updatePosition = () => {
     try {
-      const div = containerRef.current
+      const div = containerRef?.current
       if (!div) return
 
       const divRect = div.getBoundingClientRect()
@@ -67,7 +67,7 @@ export function useLastTextPosition(containerRef: RefObject<HTMLElement>) {
         requestAnimationFrame(updatePosition)
       })
 
-      if (containerRef.current) {
+      if (containerRef?.current) {
         observer.observe(containerRef.current, {
           childList: true,
           characterData: true,

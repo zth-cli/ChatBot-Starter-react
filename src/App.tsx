@@ -1,5 +1,5 @@
 import { Route, RouteObject, Routes } from 'react-router'
-import AuthRoute from './router/AuthRoute'
+// import AuthRoute from './router/AuthRoute'
 import { useChatStore } from '@/stores/useChatStore'
 import { SidebarProvider } from '@/components/Sidebar/SidebarProvider'
 import { router } from './router'

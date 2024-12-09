@@ -1,97 +1,78 @@
-import { useRef, useLayoutEffect, createElement } from 'react' // 改用 useLayoutEffect
-import { createRoot } from 'react-dom/client'
+import { useRef, useEffect, createElement } from 'react'
+import { createRoot, type Root } from 'react-dom/client'
 import { CodeBlock } from '@/components/ChatCodeBlock'
 
+interface MountedRoot {
+  root: Root
+  el: HTMLElement
+}
+
 export function useCodeBlockMount(
-  containerRef: React.RefObject<HTMLElement>,
+  containerRef: React.RefObject<HTMLElement | null>,
   className = '.react-code-block'
 ) {
-  const mountedRoots = useRef<Array<{ root: any; el: HTMLElement }>>([])
-  const lastContentRef = useRef<string>('')
-  const cleanupScheduled = useRef<number>()
-  const isMounting = useRef(false)
+  const mountedRoots = useRef<MountedRoot[]>([])
+  const pendingMounts = useRef<MountedRoot[]>([])
 
   const cleanupMountedRoots = () => {
-    if (cleanupScheduled.current) {
-      window.cancelAnimationFrame(cleanupScheduled.current)
-    }
-
-    if (isMounting.current) return
-
-    cleanupScheduled.current = window.requestAnimationFrame(() => {
-      mountedRoots.current.forEach(({ root, el }) => {
-        try {
-          root.unmount()
-          el.remove()
-        } catch (e) {
-          console.error('清理代码块时出错:', e)
-        }
-      })
-      mountedRoots.current = []
+    mountedRoots.current.forEach(({ root, el }) => {
+      try {
+        root.unmount()
+        el.remove()
+      } catch (error) {
+        console.error('清理 root 时出错:', error)
+      }
     })
+    mountedRoots.current = []
   }
 
   const mountCodeBlocks = () => {
     if (!containerRef.current) return
 
-    const currentContent = containerRef.current.innerHTML
-    if (currentContent === lastContentRef.current) {
-      return
-    }
-
-    lastContentRef.current = currentContent
-
-    // 标记正在挂载
-    isMounting.current = true
+    // 清理之前的实例
     cleanupMountedRoots()
 
-    window.requestAnimationFrame(() => {
-      if (!containerRef.current) return
+    const codeBlocks = containerRef.current.querySelectorAll(className)
+    codeBlocks.forEach(block => {
+      const code = decodeURIComponent(block.getAttribute('data-code') || '')
+      const lang = block.getAttribute('data-lang') || ''
 
-      try {
-        const codeBlocks = containerRef.current.querySelectorAll(className)
-        codeBlocks.forEach(block => {
-          const code = decodeURIComponent(block.getAttribute('data-code') || '')
-          const lang = block.getAttribute('data-lang') || ''
+      const mountEl = document.createElement('div')
+      mountEl.setAttribute('data-code', lang)
 
-          const mountEl = document.createElement('div')
-          const root = createRoot(mountEl)
+      // 先将挂载元素添加到 DOM 中
+      block.replaceWith(mountEl)
 
-          root.render(createElement(CodeBlock, { code, language: lang }))
-          block.replaceWith(mountEl)
+      const root = createRoot(mountEl)
 
-          mountedRoots.current.push({
-            root,
-            el: mountEl
+      // 使用 requestAnimationFrame 确保在下一帧渲染
+      requestAnimationFrame(() => {
+        root.render(
+          createElement(CodeBlock, {
+            code,
+            language: lang
           })
+        )
+
+        // 将新创建的 root 添加到 pendingMounts
+        pendingMounts.current.push({
+          root,
+          el: mountEl
         })
-      } catch (e) {
-        console.error('挂载代码块时出错:', e)
-      } finally {
-        isMounting.current = false
-      }
+      })
+    })
+
+    // 使用 requestAnimationFrame 在下一帧更新 mountedRoots
+    requestAnimationFrame(() => {
+      mountedRoots.current = [...pendingMounts.current]
+      pendingMounts.current = []
     })
   }
 
-  // 使用 useLayoutEffect 处理清理
-  useLayoutEffect(() => {
+  // 组件卸载时清理
+  useEffect(() => {
     return () => {
-      if (cleanupScheduled.current) {
-        window.cancelAnimationFrame(cleanupScheduled.current)
-      }
-
-      // 使用 Promise.resolve() 将清理推迟到下一个微任务
-      Promise.resolve().then(() => {
-        mountedRoots.current.forEach(({ root, el }) => {
-          try {
-            root.unmount()
-            el.remove()
-          } catch (e) {
-            console.error('组件卸载时清理出错:', e)
-          }
-        })
-        mountedRoots.current = []
-      })
+      cleanupMountedRoots()
     }
   }, [])
 

@@ -11,7 +11,7 @@ interface CodeBlockProps {
 }
 
 export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = null }) => {
-  const isDark = true
+  const isDark = false
   const [isExpanded, setIsExpanded] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
   const highlightedCodeRef = useRef<HTMLElement>(null)
