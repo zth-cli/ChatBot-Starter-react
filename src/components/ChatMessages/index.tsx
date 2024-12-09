@@ -58,7 +58,7 @@ export const ChatMessages = ({
           <ChatItem.AI
             item={item}
             loading={ChatLoadingDots}
-            onRegenerateMessage={() => onRegenerateMessage?.({index})}
+            onRegenerateMessage={() => onRegenerateMessage?.({ index })}
             onClickSuggest={onClickSuggest}
             needRefresh={isLastMessageAssistant && msgLength === index}
             showSuggest={isLastMessageAssistant && msgLength === index}

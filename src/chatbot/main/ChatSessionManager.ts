@@ -13,7 +13,7 @@ export class ChatSessionManager<T extends ChatSession> {
 
   constructor(
     private readonly createChatCore: () => T,
-    maxConcurrentChats = 3,
+    maxConcurrentChats = 3
   ) {
     this.maxConcurrentChats = maxConcurrentChats
   }
@@ -70,7 +70,7 @@ export class ChatSessionManager<T extends ChatSession> {
     // 将新的会话核心及其创建时间添加到缓存中
     this.chatCoreMap.set(chatId, {
       core: chatCore,
-      lastUsed: Date.now(),
+      lastUsed: Date.now()
     })
 
     // 返回新的会话核心
@@ -78,7 +78,7 @@ export class ChatSessionManager<T extends ChatSession> {
   }
 
   async stopAllSessions() {
-    const promises = Array.from(this.chatCoreMap.keys()).map((chatId) => this.cleanupSession(chatId))
+    const promises = Array.from(this.chatCoreMap.keys()).map(chatId => this.cleanupSession(chatId))
     await Promise.all(promises)
   }
 }

@@ -35,7 +35,7 @@ export class errorAnalyzer {
   } {
     const result = {
       type: error?.constructor?.name || 'Unknown',
-      details: {},
+      details: {}
     } as any
 
     // 基础 Error 类型检查
@@ -44,7 +44,7 @@ export class errorAnalyzer {
       result.message = error.message
       result.details = {
         stack: error.stack,
-        cause: error.cause,
+        cause: error.cause
       }
     }
 
@@ -55,7 +55,7 @@ export class errorAnalyzer {
       result.code = error.code
       result.details = {
         ...result.details,
-        isStreamAbort: this.isStreamAbortError(error),
+        isStreamAbort: this.isStreamAbortError(error)
       }
     }
 
@@ -64,8 +64,10 @@ export class errorAnalyzer {
       result.details = {
         ...result.details,
         ...Object.fromEntries(
-          Object.entries(error).filter(([key]) => !['name', 'message', 'code', 'type'].includes(key)),
-        ),
+          Object.entries(error).filter(
+            ([key]) => !['name', 'message', 'code', 'type'].includes(key)
+          )
+        )
       }
     }
 

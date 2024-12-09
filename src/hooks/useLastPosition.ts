@@ -48,7 +48,7 @@ export function useLastTextPosition(containerRef: RefObject<HTMLElement>) {
         const lastRect = rects[rects.length - 1]
         setPosition({
           x: lastRect.right - divRect.left + div.scrollLeft,
-          y: lastRect.top - divRect.top + div.scrollTop,
+          y: lastRect.top - divRect.top + div.scrollTop
         })
       } else {
         setPosition(null)
@@ -71,7 +71,7 @@ export function useLastTextPosition(containerRef: RefObject<HTMLElement>) {
         observer.observe(containerRef.current, {
           childList: true,
           characterData: true,
-          subtree: true,
+          subtree: true
         })
       }
 
@@ -83,6 +83,6 @@ export function useLastTextPosition(containerRef: RefObject<HTMLElement>) {
 
   return {
     position,
-    updatePosition,
+    updatePosition
   }
-} 
+}

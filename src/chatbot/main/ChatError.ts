@@ -2,7 +2,7 @@ export class ChatError extends Error {
   constructor(
     message: string,
     public code: string,
-    public retryable: boolean = false,
+    public retryable: boolean = false
   ) {
     super(message)
     this.name = 'ChatError'

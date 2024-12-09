@@ -15,6 +15,11 @@ export default () => {
   }, [params?.chatId])
 
   const { sendMessage, stopStream, regenerateMessage } = useChat()
+  const sendUserMessage = () => {
+    sendMessage(message)
+    setMessage('')
+  }
+
   const [isWorkspace, setIsWorkspace] = useState(false)
   const { isCollapsed } = useSidebar()
 
@@ -36,7 +41,7 @@ export default () => {
             <ChatTextArea
               value={message}
               onChange={setMessage}
-              onSend={() => sendMessage(message)}
+              onSend={sendUserMessage}
               onStop={stopStream}
               loading={currentChatHistory?.loading}
             />

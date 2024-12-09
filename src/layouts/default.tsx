@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router'
 import { useSidebar } from '@/components/Sidebar/SidebarProvider'
 import { Sidebar, SidebarSheet } from '@/components/Sidebar'
-const layout = () => {
+const Layout = () => {
   const { md } = useResponsive()
   const { isCollapsed } = useSidebar()
 
@@ -23,4 +23,4 @@ const layout = () => {
   )
 }
 
-export default layout
+export default Layout

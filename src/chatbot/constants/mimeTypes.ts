@@ -192,10 +192,17 @@ export enum MimeType {
   /**
    * HEIC
    */
-  HEIC = 'image/heic',
+  HEIC = 'image/heic'
 }
 
-export const ImageMimeTypes = [MimeType.JPEG, MimeType.PNG, MimeType.GIF, MimeType.WEBP, MimeType.AVIF, MimeType.HEIC]
+export const ImageMimeTypes = [
+  MimeType.JPEG,
+  MimeType.PNG,
+  MimeType.GIF,
+  MimeType.WEBP,
+  MimeType.AVIF,
+  MimeType.HEIC
+]
 export const VideoMimeTypes = [MimeType.VIDEO]
 export const AudioMimeTypes = [MimeType.AUDIO]
 
@@ -280,5 +287,5 @@ export enum FileType {
   /**
    * PDF
    */
-  PDF = '255044462D312E',
+  PDF = '255044462D312E'
 }

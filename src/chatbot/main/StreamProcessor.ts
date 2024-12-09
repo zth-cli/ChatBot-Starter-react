@@ -93,7 +93,7 @@ class OpenAIStreamProcessor extends BaseStreamProcessor {
           await this.handleError(error)
           controller.error(error)
         }
-      },
+      }
     })
   }
 }
@@ -135,7 +135,7 @@ class OllamaStreamProcessor extends BaseStreamProcessor {
           await this.handleError(error)
           controller.error(error)
         }
-      },
+      }
     })
   }
 }
@@ -148,10 +148,12 @@ export class StreamProcessor {
 
   constructor(
     private handlers: StreamProcessorHandlers,
-    processorType: ProcessorType = ProcessorType.OPENAI,
+    processorType: ProcessorType = ProcessorType.OPENAI
   ) {
     this.processor =
-      processorType === ProcessorType.OPENAI ? new OpenAIStreamProcessor(handlers) : new OllamaStreamProcessor(handlers)
+      processorType === ProcessorType.OPENAI
+        ? new OpenAIStreamProcessor(handlers)
+        : new OllamaStreamProcessor(handlers)
   }
 
   async processStream(response: Response): Promise<void> {
@@ -200,5 +202,5 @@ export interface OpenAIStreamChunk {
 // 处理器类型枚举
 export enum ProcessorType {
   OPENAI = 'openai',
-  OLLAMA = 'ollama',
+  OLLAMA = 'ollama'
 }

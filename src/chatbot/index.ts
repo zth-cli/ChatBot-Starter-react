@@ -23,19 +23,6 @@ const DEFAULT_CONFIG: ChatConfig = {
   }
 }
 
-// 初始聊天历史状态
-const createInitialChatHistory = (): ChatHistory => ({
-  id: crypto.randomUUID(),
-  children: [],
-  loading: false,
-  name: '新会话',
-  createTime: new Date().toISOString(),
-  updateTime: new Date().toISOString(),
-  userId: '1',
-  isFavorite: false,
-  isTemp: true
-})
-
 // 创建新消息
 const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage => ({
   id: crypto.randomUUID(),
@@ -47,10 +34,12 @@ const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage
 })
 
 export const useChat: UseChatHookFn = () => {
+  const sessionManagerRef = useRef<ChatSessionManager<ChatCore>>()
   const chatStore = useChatStore()
-  const currentChat = useMemo(() => {
-    return chatStore.currentChatHistory || createInitialChatHistory()
-  }, [chatStore.currentChatHistory])
+  const currentChat = useMemo(
+    () => chatStore.currentChatHistory,
+    [chatStore.currentChatHistory?.id]
+  )
   // API客户端初始化
   const baseUrl = import.meta.env.DEV ? '/api' : ''
   const apiClient = useMemo(
@@ -77,32 +66,33 @@ export const useChat: UseChatHookFn = () => {
       onComplete: message => {
         chatStore.updateCurrentChatMessage(message)
         chatStore.updateChatHistoryStatusById(chatId, false)
-        sessionManager.cleanupSession(chatId)
+        sessionManagerRef.current?.cleanupSession(chatId)
       },
       onError: (message, error) => {
         console.error('Chat error:', error)
         chatStore.updateCurrentChatMessage({ ...message, status: MessageStatus.ERROR })
         chatStore.updateChatHistoryStatusById(chatId, false)
-        sessionManager.cleanupSession(chatId)
+        sessionManagerRef.current?.cleanupSession(chatId)
       },
       onStop: message => {
         chatStore.updateCurrentChatMessage({ ...message, status: MessageStatus.STOP })
         chatStore.updateChatHistoryStatusById(chatId, false)
-        sessionManager.cleanupSession(chatId)
+        sessionManagerRef.current?.cleanupSession(chatId)
       }
     }),
     [chatStore]
   )
 
   const createChatCore = useCallback(
-    () => new ChatCore(DEFAULT_CONFIG, createMessageHandler(currentChat.id), apiClient),
-    [apiClient, createMessageHandler, currentChat.id]
+    () => new ChatCore(DEFAULT_CONFIG, createMessageHandler(currentChat?.id!), apiClient),
+    [currentChat?.id]
   )
 
-  const sessionManager = useMemo(
-    () => new ChatSessionManager<ChatCore>(createChatCore),
-    [createChatCore]
-  )
+  useEffect(() => {
+    if (!sessionManagerRef.current) {
+      sessionManagerRef.current = new ChatSessionManager<ChatCore>(createChatCore)
+    }
+  }, [createChatCore])
 
   const addUserMessage = useCallback(
     (content: string) => {
@@ -119,30 +109,30 @@ export const useChat: UseChatHookFn = () => {
   const sendMessage = useCallback(
     async (message: string) => {
       try {
-        const chatId = currentChat.id
+        const chatId = currentChat?.id
         if (!chatId) return
 
         addUserMessage(message)
-        const chatCore = await sessionManager.getSession(chatId)
+        const chatCore = await sessionManagerRef.current?.getSession(chatId)
 
         apiClient.setApiClientHeaders({
           ChatToken: import.meta.env.VITE_CHAT_TOKEN || '27ecabac-764e-4132-b4d2-fa50b7ec1b65'
         })
 
-        await chatCore.sendMessage<ChatPayload>({
+        await chatCore?.sendMessage<ChatPayload>({
           chatFlowId: import.meta.env.VITE_CHAT_FLOW_ID,
           messages: [{ role: 'user', content: message }]
         })
       } catch (error) {
         console.error('Failed to send message:', error)
-        chatStore.updateChatHistoryStatusById(currentChat.id, false)
+        chatStore.updateChatHistoryStatusById(currentChat?.id!, false)
       }
     },
-    [currentChat.id, addUserMessage, sessionManager, apiClient, chatStore]
+    [currentChat?.id, addUserMessage, apiClient, chatStore]
   )
   const regenerateMessage = useCallback(
     async (index: number) => {
-      const chatId = currentChat.id
+      const chatId = currentChat?.id
       if (!chatId) return
 
       const messages = chatStore.currentChatMessages
@@ -160,32 +150,32 @@ export const useChat: UseChatHookFn = () => {
 
         // 重新发送用户消息
         const userMessage = previousMessage.content
-        const chatCore = await sessionManager.getSession(chatId)
+        const chatCore = await sessionManagerRef.current?.getSession(chatId)
         apiClient.setApiClientHeaders({
           ChatToken: '27ecabac-764e-4132-b4d2-fa50b7ec1b65'
         })
-        await chatCore.sendMessage<ChatPayload>({
+        await chatCore?.sendMessage<ChatPayload>({
           chatFlowId: import.meta.env.VITE_CHAT_FLOW_ID,
           messages: [{ role: 'user', content: userMessage }]
         })
       }
     },
-    [currentChat.id, chatStore, sessionManager, apiClient]
+    [currentChat?.id, chatStore, apiClient]
   )
 
   const stopStream = useCallback(async () => {
     try {
-      const chatId = currentChat.id
+      const chatId = currentChat?.id
       if (!chatId) return
 
-      const chatCore = await sessionManager.getSession(chatId)
-      await chatCore.stopStream()
+      const chatCore = await sessionManagerRef.current?.getSession(chatId)
+      await chatCore?.stopStream()
       chatStore.updateChatHistoryStatusById(chatId, false)
     } catch (error) {
       console.error('Failed to stop stream:', error)
-      chatStore.updateChatHistoryStatusById(currentChat.id, false)
+      chatStore.updateChatHistoryStatusById(currentChat?.id!, false)
     }
-  }, [currentChat.id, sessionManager, chatStore])
+  }, [currentChat?.id, chatStore])
 
   return {
     sendMessage,

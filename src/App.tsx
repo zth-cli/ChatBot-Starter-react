@@ -10,7 +10,7 @@ function App() {
 
   useEffect(() => {
     init()
-  }, [])
+  }, [init])
 
   const RouteAuthFun = useCallback((routeList: RouteObject[]) => {
     return routeList.map(item => {

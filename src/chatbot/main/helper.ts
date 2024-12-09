@@ -1,4 +1,10 @@
-import { ChatPluginManifest, PluginType, Meta, PluginSchema, PluginRequestPayload } from '@rzx/chat-plugin-sdk'
+import {
+  ChatPluginManifest,
+  PluginType,
+  Meta,
+  PluginSchema,
+  PluginRequestPayload
+} from '@rzx/chat-plugin-sdk'
 import { ChatMessage, ImageMessage, MessageType, ToolCall } from './types'
 import { AbortError, fileToBase64, isFileOrBlobInstance } from '@/lib'
 import { ImageMimeTypes } from '@/chatbot/constants/mimeTypes'
@@ -47,19 +53,26 @@ export const genToolCallingName = (identifier: string, name: string, type: strin
  */
 export const enabledSysRoles = (plugins: ChatPluginManifest[]) => {
   const toolsSystemRole = plugins
-    .map((plugin) => {
+    .map(plugin => {
       const meta = plugin?.meta
       const title = getPluginTitle(meta) || plugin?.identifier
       const systemRole = plugin?.systemRole || getPluginDesc(meta)
       const methods = plugin?.api
-        .map((m) => [`#### ${genToolCallingName(plugin?.identifier, m.name, plugin.type)}`, m.description].join('\n\n'))
+        .map(m =>
+          [
+            `#### ${genToolCallingName(plugin?.identifier, m.name, plugin.type)}`,
+            m.description
+          ].join('\n\n')
+        )
         .join('\n\n')
 
       return [`### ${title}`, systemRole, 'The APIs you can use:', methods].join('\n\n')
     })
     .filter(Boolean)
   if (toolsSystemRole.length > 0) {
-    return ['## Tools', 'You can use these tools below:', ...toolsSystemRole].filter(Boolean).join('\n\n')
+    return ['## Tools', 'You can use these tools below:', ...toolsSystemRole]
+      .filter(Boolean)
+      .join('\n\n')
   }
 
   return ''
@@ -71,14 +84,14 @@ export const enabledSysRoles = (plugins: ChatPluginManifest[]) => {
  */
 export const parseAvailableTools = (plugins: ChatPluginManifest[]) => {
   return plugins
-    .map((plugin) => {
-      return plugin?.api.map((api) => ({
+    .map(plugin => {
+      return plugin?.api.map(api => ({
         type: 'function',
         function: {
           name: genToolCallingName(plugin.identifier, api.name, plugin.type),
           description: api.description,
-          parameters: api.parameters,
-        },
+          parameters: api.parameters
+        }
       }))
     })
     .flat()
@@ -109,7 +122,9 @@ export const parseHistoryMessages = async (messages: ChatMessage[], index?: numb
 /**
  * @description 解析图片消息
  */
-export const parseImageMessage = async (message: ChatMessage): Promise<ImageMessage[] | undefined> => {
+export const parseImageMessage = async (
+  message: ChatMessage
+): Promise<ImageMessage[] | undefined> => {
   const data: ImageMessage[] = []
   for await (const item of message!.attachments!) {
     if (ImageMimeTypes.includes(item.type)) {
@@ -121,9 +136,9 @@ export const parseImageMessage = async (message: ChatMessage): Promise<ImageMess
         data.push({
           image_url: {
             detail: 'auto',
-            url: base64Str,
+            url: base64Str
           },
-          type: 'image_url',
+          type: 'image_url'
         })
       } catch (error) {
         /* empty */
@@ -149,7 +164,7 @@ export const handleToolCallsResponse = (toolCalls: ToolCall[]) => {
       apiName,
       arguments: '', // 将在后续流中累积
       identifier,
-      type: pluginType,
+      type: pluginType
     }
     // 如果apiName是md5哈希值, 则从插件清单中找到对应的api
     // if (apiName?.startsWith(PLUGIN_SCHEMA_API_MD5_PREFIX)) {

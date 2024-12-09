@@ -24,7 +24,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = null }) =
 
       const html = highlighter.codeToHtml(code, {
         lang: language || 'bash',
-        theme,
+        theme
       })
 
       if (highlightedCodeRef.current) {
@@ -47,10 +47,13 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = null }) =
     <>
       <div
         className="border rounded-lg inline-block px-2 leading-7 text-sm cursor-pointer mt-1 select-none"
-        onClick={toggleExpand}
-      >
+        onClick={toggleExpand}>
         {isExpanded ? '收起' : '展开'}
-        {isExpanded ? <ChevronUp className="h-4 w-4 inline ml-1" /> : <ChevronDown className="h-4 w-4 inline ml-1" />}
+        {isExpanded ? (
+          <ChevronUp className="h-4 w-4 inline ml-1" />
+        ) : (
+          <ChevronDown className="h-4 w-4 inline ml-1" />
+        )}
       </div>
       <div className="code-block-wrapper" style={{ display: isExpanded ? 'block' : 'none' }}>
         <div className="code-block-header">
@@ -70,10 +73,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = null }) =
           </div>
         )}
         <pre className={`code-block ${isLoading ? 'hidden' : ''}`}>
-          <code
-            ref={highlightedCodeRef}
-            className={language ? `language-${language}` : ''}
-          />
+          <code ref={highlightedCodeRef} className={language ? `language-${language}` : ''} />
         </pre>
       </div>
     </>
