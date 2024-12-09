@@ -45,11 +45,11 @@ const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage
 })
 
 export const useChat: UseChatHookFn = () => {
-  const sessionManagerRef = useRef<ChatSessionManager<ChatCore>>()
+  const sessionManagerRef = useRef<ChatSessionManager<ChatCore> | null>(null)
   const chatStore = useChatStore()
   const currentChat = useMemo(() => {
     return chatStore.currentChatHistory || createInitialChatHistory()
-  }, [chatStore.currentChatHistory?.id])
+  }, [chatStore.currentChatHistory])
   // API客户端初始化
   const baseUrl = import.meta.env.DEV ? '/api' : ''
   const apiClient = useMemo(
@@ -58,7 +58,7 @@ export const useChat: UseChatHookFn = () => {
         `${baseUrl}/llm/skillCenter/plugin/chat/openai/formdata`,
         import.meta.env.VITE_API_KEY || '61c36ab3c518418b916a6ffc2190d170'
       ),
-    []
+    [baseUrl]
   )
 
   // 消息处理器
@@ -94,8 +94,8 @@ export const useChat: UseChatHookFn = () => {
   )
 
   const createChatCore = useCallback(
-    () => new ChatCore(DEFAULT_CONFIG, createMessageHandler(currentChat?.id!), apiClient),
-    [currentChat?.id]
+    () => new ChatCore(DEFAULT_CONFIG, createMessageHandler(currentChat.id!), apiClient),
+    [apiClient, createMessageHandler, currentChat.id]
   )
 
   useEffect(() => {
@@ -135,7 +135,7 @@ export const useChat: UseChatHookFn = () => {
         })
       } catch (error) {
         console.error('Failed to send message:', error)
-        chatStore.updateChatHistoryStatusById(currentChat?.id!, false)
+        chatStore.updateChatHistoryStatusById(currentChat.id!, false)
       }
     },
     [currentChat?.id, addUserMessage, apiClient, chatStore]
@@ -183,7 +183,7 @@ export const useChat: UseChatHookFn = () => {
       chatStore.updateChatHistoryStatusById(chatId, false)
     } catch (error) {
       console.error('Failed to stop stream:', error)
-      chatStore.updateChatHistoryStatusById(currentChat?.id!, false)
+      chatStore.updateChatHistoryStatusById(currentChat.id!, false)
     }
   }, [currentChat?.id, chatStore])
 
