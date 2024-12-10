@@ -6,8 +6,9 @@
   "scripts": {
     "preinstall": "echo 111",
     "postinstall": "echo 123",
-    "dev": "vite --port 3334 --open",
+    "dev": "vite --port 3335 --open",
     "build": "vite build",
+    "scan": "npx react-scan@latest localhost:3335",
     "typecheck": "vue-tsc",
     "preview": "vite preview",
     "prettier": "prettier --write .",
