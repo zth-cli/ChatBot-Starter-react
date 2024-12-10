@@ -12,7 +12,7 @@ export default () => {
   const [message, setMessage] = useState('')
   useEffect(() => {
     getChatHistoryById(params?.chatId || '')
-  }, [params?.chatId])
+  }, [getChatHistoryById, params?.chatId])
 
   const { sendMessage, stopStream, regenerateMessage } = useChat()
   const sendUserMessage = () => {

@@ -64,7 +64,7 @@ export function ChatTextArea({
 
   return (
     <div className="relative w-full">
-      <div className="w-full flex flex-col rounded-xl border shadow-sm overflow-hidden bg-neutral-50">
+      <div className="w-full flex flex-col rounded-xl border shadow-sm overflow-hidden bg-background">
         <textarea
           ref={textareaRef}
           value={value}

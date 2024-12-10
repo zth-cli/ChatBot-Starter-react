@@ -31,7 +31,6 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
 }) => {
   // 是否是插件类型
   const isPlugin = useMemo(() => Boolean(item?.toolCalls?.type), [item?.toolCalls?.type])
-
   // 状态判断
   const isPending = useMemo(() => item.status === MessageStatus.PENDING, [item.status])
   const isLoading = useMemo(() => item.status === MessageStatus.STREAMING, [item.status])

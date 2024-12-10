@@ -12,7 +12,7 @@ interface ChatStore {
   init: () => Promise<void>
   getChatHistoryList: () => Promise<void>
   getChatHistoryById: (id?: string) => ChatHistory | null
-  insertNewChatHistory: () => void
+  insertNewChatHistory: (cb?: (newChat: ChatHistory) => void) => void
   insertChatMessage: (message: ChatMessage) => void
   resetChat: () => void
   deleteChatHistory: (id: string, cb?: () => void) => void
@@ -61,13 +61,14 @@ export const useChatStore = create<ChatStore>()(
       },
 
       // 插入新对话,同时更新当前对话
-      insertNewChatHistory: () => {
+      insertNewChatHistory: (cb?: (newChat: ChatHistory) => void) => {
         const newChat = createDefaultChatHistory()
         set(state => ({
           currentChatHistory: newChat,
           currentChatMessages: newChat.children,
           chatHistoryList: [newChat, ...state.chatHistoryList]
         }))
+        cb?.(newChat)
       },
       // 根据id获取对话,同时更新当前对话
       getChatHistoryById: (id?: string) => {
