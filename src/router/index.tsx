@@ -9,7 +9,7 @@ const router: RouteObject[] = [
     element: <Layout />,
     children: [
       { path: '', element: lazyLoad(lazy(() => import('@/pages'))) },
-      { path: '/chat/:chatId', element: lazyLoad(lazy(() => import('@/pages/chat'))) }
+      { path: '/chat/:chatId?', element: lazyLoad(lazy(() => import('@/pages/chat'))) }
     ]
   },
   { path: '*', element: <NotFound /> }

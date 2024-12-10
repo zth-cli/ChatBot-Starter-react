@@ -4,7 +4,7 @@ import { useLastTextPosition } from '@/hooks/useLastPosition'
 import { useTextSelection } from '@/hooks/useTextSelection'
 import { useCodeBlockMount } from '@/hooks/useCodeBlockMount'
 import { useMarkdownRenderer } from '@/hooks/useMarkdownRenderer'
-
+import { Skeleton } from '@/components/ui/skeleton'
 interface RenderMarkdownProps {
   id?: string
   unstyle?: boolean
@@ -24,18 +24,16 @@ export const RenderMarkdown: React.FC<RenderMarkdownProps> = ({
   const [isExpanded, setIsExpanded] = useState(false)
   const [hasOverflow, setHasOverflow] = useState(false)
 
-  const { md } = useMarkdownRenderer()
+  const { md, shikiReady } = useMarkdownRenderer()
   const { getSelectionInfo, setSelectionByInfo } = useTextSelection(containerRef)
   const { mountCodeBlocks } = useCodeBlockMount(containerRef)
   const { position } = useLastTextPosition(containerRef)
 
   let lastContent = ''
-
   const updateContent = async () => {
     if (!containerRef.current) return
-
     const selectionInfo = getSelectionInfo()
-
+    const mdInstance = await md
     if (unstyle) {
       if (lastContent !== data) {
         containerRef.current.textContent = data as string
@@ -46,8 +44,8 @@ export const RenderMarkdown: React.FC<RenderMarkdownProps> = ({
         containerRef.current.innerHTML = JSON.stringify(data, null, 2)
         lastContent = JSON.stringify(data)
       } else {
-        const html = md.render(data)
-        if (lastContent !== html) {
+        const html = mdInstance.render(data)
+        if (lastContent !== html && containerRef.current) {
           containerRef.current.innerHTML = html
           lastContent = html
           // mountCodeBlocks()
@@ -69,7 +67,14 @@ export const RenderMarkdown: React.FC<RenderMarkdownProps> = ({
   }, [data, unstyle, maxHeight])
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
+      {!shikiReady && (
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-4 w-[300px]" />
+          <Skeleton className="h-4 w-[250px]" />
+          <Skeleton className="h-4 w-[200px]" />
+        </div>
+      )}
       <div className="relative">
         <div
           ref={containerRef}

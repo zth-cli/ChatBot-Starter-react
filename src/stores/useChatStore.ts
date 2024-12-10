@@ -10,6 +10,7 @@ interface ChatStore {
 
   // 方法
   init: () => Promise<void>
+  resetChatHistoryList: () => void
   getChatHistoryList: () => Promise<void>
   getChatHistoryById: (id?: string) => ChatHistory | null
   insertNewChatHistory: () => void
@@ -19,6 +20,8 @@ interface ChatStore {
   updateChatHistoryStatusById: (id: string, status: boolean) => void
   updateCurrentChatMessage: (message: Partial<ChatMessage> & { id: string }) => void
   removeChatMessageById: (id: string) => void
+  updateChatHistoryName: (id: string, name: string) => void
+  updateChatHistoryFavorite: (id: string, isFavorite: boolean) => void
 }
 
 const CHAT_KEY = 'chat-history-list1'
@@ -27,7 +30,7 @@ const createDefaultChatHistory = (): ChatHistory => {
   const now = new Date().toISOString()
   return {
     id: crypto.randomUUID(),
-    name: '新对话1',
+    name: '新对话',
     createTime: now,
     updateTime: now,
     userId: '1',
@@ -50,6 +53,10 @@ export const useChatStore = create<ChatStore>()(
       init: async () => {
         await get().getChatHistoryList()
       },
+      // 清空对话列表
+      resetChatHistoryList: () => {
+        set({ chatHistoryList: [], currentChatHistory: null, currentChatMessages: [] })
+      },
       // 获取对话列表
       getChatHistoryList: async () => {
         try {
@@ -63,10 +70,42 @@ export const useChatStore = create<ChatStore>()(
       // 插入新对话,同时更新当前对话
       insertNewChatHistory: () => {
         const newChat = createDefaultChatHistory()
+        const existingChats = get().chatHistoryList
+        const chatCount = existingChats.length + 1
+
+        // 如果已存在对话,则添加数字后缀
+        if (chatCount > 1) {
+          newChat.name = `新对话 ${chatCount}`
+        }
         set(state => ({
           currentChatHistory: newChat,
           currentChatMessages: newChat.children,
           chatHistoryList: [newChat, ...state.chatHistoryList]
+        }))
+      },
+      // 更新对话名称
+      updateChatHistoryName: (id: string, name: string) => {
+        set(state => ({
+          chatHistoryList: state.chatHistoryList.map(chat =>
+            chat.id === id ? { ...chat, name } : chat
+          ),
+          currentChatHistory:
+            state.currentChatHistory?.id === id
+              ? { ...state.currentChatHistory, name }
+              : state.currentChatHistory
+        }))
+      },
+
+      // 更新收藏状态
+      updateChatHistoryFavorite: (id: string, isFavorite: boolean) => {
+        set(state => ({
+          chatHistoryList: state.chatHistoryList.map(chat =>
+            chat.id === id ? { ...chat, isFavorite } : chat
+          ),
+          currentChatHistory:
+            state.currentChatHistory?.id === id
+              ? { ...state.currentChatHistory, isFavorite }
+              : state.currentChatHistory
         }))
       },
       // 根据id获取对话,同时更新当前对话
