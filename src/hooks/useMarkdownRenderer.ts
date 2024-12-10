@@ -8,7 +8,7 @@ import { Token } from 'markdown-it/index.js'
 
 // 创建一个单例 MarkdownIt 实例
 let isShikiReady = false
-const createMarkdownInstance = async () => {
+const createMarkdownInstance = () => {
   const md = new MarkdownIt({ html: true, breaks: true, linkify: true })
 
   md.use(markdownitExternalLink, {
@@ -23,8 +23,8 @@ const createMarkdownInstance = async () => {
       displayMode: false
     }
   })
-  const shikiInstance = shiki || (await createShiki())
-  md.use(shikiInstance)
+  // const shikiInstance = shiki || (await createShiki())
+  // md.use(shikiInstance)
   isShikiReady = true
   // 优化 fence 渲染规则
   // md.renderer.rules.fence = (tokens: Token[], idx: number) => {
