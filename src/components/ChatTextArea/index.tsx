@@ -9,6 +9,7 @@ interface ChatTextAreaProps {
   onSend: () => void
   onStop?: () => void
   loading?: boolean
+  setIsWorkspace: (isWorkspace: boolean) => void
 }
 
 export function ChatTextArea({
@@ -16,7 +17,8 @@ export function ChatTextArea({
   onChange,
   onSend,
   onStop,
-  loading = false
+  loading = false,
+  setIsWorkspace
 }: ChatTextAreaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -64,7 +66,7 @@ export function ChatTextArea({
 
   return (
     <div className="relative w-full">
-      <div className="w-full flex flex-col rounded-xl border shadow-sm overflow-hidden bg-background">
+      <div className="w-full flex flex-col rounded-xl border shadow-sm overflow-hidden bg-neutral-50 dark:bg-primary-foreground">
         <textarea
           ref={textareaRef}
           value={value}
@@ -79,7 +81,8 @@ export function ChatTextArea({
             variant="ghost"
             title="工作台"
             size="icon"
-            className="text-gray-400 hover:text-gray-600">
+            className="text-gray-400 hover:text-gray-600"
+            onClick={() => setIsWorkspace(true)}>
             <Box className="!size-5" />
           </Button>
           <Button

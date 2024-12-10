@@ -178,7 +178,7 @@ export type ChatHook = {
    */
   stopStream: (params?: any) => void
 
-  regenerateMessage: (index: number) => void
+  regenerateMessage?: (index: number) => void
 }
 export type UseChatHookFn = (params?: UseChatParams) => ChatHook
 

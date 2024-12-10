@@ -1,12 +1,14 @@
 import { useMemo } from 'react'
 import katex from 'katex'
+import { createShiki, shiki } from '@/lib/singletonShiki'
 import MarkdownIt from 'markdown-it'
 import markdownItTexMath from 'markdown-it-texmath'
 import markdownitExternalLink from 'markdown-it-external-link'
 import { Token } from 'markdown-it/index.js'
 
 // 创建一个单例 MarkdownIt 实例
-const createMarkdownInstance = () => {
+let isShikiReady = false
+const createMarkdownInstance = async () => {
   const md = new MarkdownIt({ html: true, breaks: true, linkify: true })
 
   md.use(markdownitExternalLink, {
@@ -21,13 +23,17 @@ const createMarkdownInstance = () => {
       displayMode: false
     }
   })
-
+  const shikiInstance = shiki || (await createShiki())
+  md.use(shikiInstance)
+  isShikiReady = true
   // 优化 fence 渲染规则
-  md.renderer.rules.fence = (tokens: Token[], idx: number) => {
-    const token = tokens[idx]
-    // return `<div class="react-code-block" data-code="${encodeURIComponent(token.content)}" data-lang="${token.info.trim()}"></div>`
-    return `<pre class='p-4 bg-gray-100 dark:bg-gray-800 rounded-md'><code class="language-${token.info.trim()}">${token.content}</code></pre>`
-  }
+  // md.renderer.rules.fence = (tokens: Token[], idx: number) => {
+  //   const token = tokens[idx]
+  //   // return `<div class="react-code-block" data-code="${encodeURIComponent(token.content)}" data-lang="${token.info.trim()}"></div>`
+  //   return `<div class='w-full overflow-auto'>
+  //   <pre class='p-4 bg-gray-100 dark:bg-gray-800 rounded-md'><code class="language-${token.info.trim()}">${token.content}</code></pre>
+  //   </div>`
+  // }
 
   return md
 }
@@ -39,5 +45,5 @@ export function useMarkdownRenderer() {
   // 使用 useMemo 缓存实例
   const md = useMemo(() => mdInstance, [])
 
-  return { md }
+  return { md, shikiReady: isShikiReady }
 }

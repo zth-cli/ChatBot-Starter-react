@@ -1,6 +1,7 @@
 import { Route, RouteObject, Routes } from 'react-router'
 // import AuthRoute from './router/AuthRoute'
 import { useChatStore } from '@/stores/useChatStore'
+import { HelmetProvider } from 'react-helmet-async'
 import { SidebarProvider } from '@/components/Sidebar/SidebarProvider'
 import { router } from './router'
 import './App.css'
@@ -24,9 +25,11 @@ function App() {
   }, [])
 
   return (
-    <SidebarProvider>
-      <Routes>{RouteAuthFun(router)}</Routes>
-    </SidebarProvider>
+    <HelmetProvider>
+      <SidebarProvider>
+        <Routes>{RouteAuthFun(router)}</Routes>
+      </SidebarProvider>
+    </HelmetProvider>
   )
 }
 

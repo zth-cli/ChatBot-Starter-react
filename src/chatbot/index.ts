@@ -48,6 +48,7 @@ export const useChat: UseChatHookFn = () => {
   const sessionManagerRef = useRef<ChatSessionManager<ChatCore> | null>(null)
   const chatStore = useChatStore()
   const currentChat = useMemo(() => {
+    console.log('currentChat', chatStore.currentChatHistory)
     return chatStore.currentChatHistory || createInitialChatHistory()
   }, [chatStore.currentChatHistory])
   // API客户端初始化
