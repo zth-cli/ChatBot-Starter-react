@@ -39,12 +39,7 @@
       margin-left: 12px;
     }
   }
-  pre {
-    overflow-x: auto;
-    overflow-wrap: break-word;
-    padding: 16px;
-    border-radius: 8px;
-  }
+
   p {
     word-wrap: break-word;
     code {
@@ -121,16 +116,4 @@
       margin: 0.5em 0;
     }
   }
-}
-.shiki {
-  background-color: #f9fafb !important;
-}
-body.dark .shiki,
-body.dark .shiki span {
-  color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
-  /* 可选，用于定义字体样式 */
-  font-style: var(--shiki-dark-font-style) !important;
-  font-weight: var(--shiki-dark-font-weight) !important;
-  text-decoration: var(--shiki-dark-text-decoration) !important;
 }

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { ThumbsUpOrDown } from './ThumbsUpOrDown'
 import { ChatMessage, MessageStatus } from '@/chatbot/main/types'
 import { useMemo } from 'react'
-import { RenderMarkdown } from '../RenderMarkdown'
+import RenderMarkdown from '../RenderMarkdown'
 import MarkdownParser from '@/mdParser/MarkdownParser'
 
 interface AIChatItemProps {
@@ -73,7 +73,8 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
       {render?.()}
       {isPlugin && <p>插件</p>}
       {item.content ? (
-        <MarkdownParser markdown={item.content} loading={isLoading} />
+        // <MarkdownParser markdown={item.content} loading={isLoading} />
+        <RenderMarkdown markdown={item.content} id={item.id} loading={isLoading} />
       ) : (
         // <RenderMarkdown data={item.content} id={item.id} loading={isLoading} />
         <span className="text-sm text-black/50 dark:text-foreground"></span>

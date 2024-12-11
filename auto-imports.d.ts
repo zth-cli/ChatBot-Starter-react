@@ -141,7 +141,6 @@ declare module 'vue' {
     readonly useBoolean: UnwrapRef<typeof import('ahooks')['useBoolean']>
     readonly useCallback: UnwrapRef<typeof import('react')['useCallback']>
     readonly useClickAway: UnwrapRef<typeof import('ahooks')['useClickAway']>
-    readonly useCodeBlockMount: UnwrapRef<typeof import('./src/hooks/useCodeBlockMount')['useCodeBlockMount']>
     readonly useContext: UnwrapRef<typeof import('react')['useContext']>
     readonly useControllableValue: UnwrapRef<typeof import('ahooks')['useControllableValue']>
     readonly useCookieState: UnwrapRef<typeof import('ahooks')['useCookieState']>
