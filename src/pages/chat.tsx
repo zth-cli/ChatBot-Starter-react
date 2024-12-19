@@ -12,6 +12,7 @@ export default () => {
   const { currentChatMessages, currentChatHistory, getChatHistoryById } = useChatStore()
   const [message, setMessage] = useState('')
 
+  // 更新 url 的 chatId
   useEffect(() => {
     if (currentChatHistory?.id) {
       const newUrl = `/chat/${currentChatHistory?.id}${window.location.search}`
