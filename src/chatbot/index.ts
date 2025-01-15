@@ -1,6 +1,6 @@
 import { ChatCore } from './main'
-import { useChatStore } from '@/stores/useChatStore'
 import { useCallback, useMemo } from 'react'
+import { useChatStore } from '@/stores/useChatStore'
 import { ChatApiClient, ChatPayload } from './main/ChatApiClient'
 import { ChatSessionManager } from './main/ChatSessionManager'
 
@@ -127,7 +127,7 @@ export const useChat: UseChatHookFn = () => {
         const chatCore = await sessionManagerRef.current?.getSession(chatId)
 
         apiClient.setApiClientHeaders({
-          ChatToken: import.meta.env.VITE_CHAT_TOKEN || '27ecabac-764e-4132-b4d2-fa50b7ec1b65'
+          ChatToken: import.meta.env.VITE_CHAT_TOKEN || '2d3689d3-8a12-49e6-a1e6-4b8069465551'
         })
 
         await chatCore?.sendMessage<ChatPayload>({
@@ -163,7 +163,7 @@ export const useChat: UseChatHookFn = () => {
         const userMessage = previousMessage.content
         const chatCore = await sessionManagerRef.current?.getSession(chatId)
         apiClient.setApiClientHeaders({
-          ChatToken: '27ecabac-764e-4132-b4d2-fa50b7ec1b65'
+          ChatToken: import.meta.env.VITE_CHAT_TOKEN
         })
         await chatCore?.sendMessage<ChatPayload>({
           chatFlowId: import.meta.env.VITE_CHAT_FLOW_ID,

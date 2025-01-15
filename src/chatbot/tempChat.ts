@@ -136,7 +136,7 @@ export const useChat: UseChatHookFn = () => {
         const chatCore = await sessionManager.getSession(chatId)
 
         apiClient.setApiClientHeaders({
-          ChatToken: import.meta.env.VITE_CHAT_TOKEN || '27ecabac-764e-4132-b4d2-fa50b7ec1b65'
+          ChatToken: import.meta.env.VITE_CHAT_TOKEN || '2d3689d3-8a12-49e6-a1e6-4b8069465551'
         })
 
         await chatCore.sendMessage<ChatPayload>({

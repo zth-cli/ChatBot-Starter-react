@@ -9,7 +9,7 @@ interface ChatTextAreaProps {
   onSend: () => void
   onStop?: () => void
   loading?: boolean
-  setIsWorkspace: (isWorkspace: boolean) => void
+  setIsWorkspace?: (isWorkspace: boolean) => void
 }
 
 export function ChatTextArea({

@@ -68,7 +68,7 @@ export const ChatMessages = ({
         {index === msgLength && <div className="shrink-0 min-w-[24px] min-h-[24px]" />}
       </div>
     ))
-  }, [messages, msgLength])
+  }, [isLastMessageAssistant, messages, msgLength, onClickSuggest, onRegenerateMessage])
   return (
     <div className="h-full relative">
       <VList ref={listRef} className="h-full" onScroll={handleScroll}>
