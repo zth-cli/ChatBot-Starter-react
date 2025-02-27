@@ -66,6 +66,7 @@ export function ChatTextArea({
   }, [])
 
   const sendAudio = async (audio: Blob) => {
+    await new Promise(resolve => setTimeout(resolve, 2000))
     console.log(audio)
   }
   const cancelAudio = () => {
