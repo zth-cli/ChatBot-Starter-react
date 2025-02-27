@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "prettier": "prettier --write .",
     "sizecheck": "npx vite-bundle-visualizer",
-    "prepare": "husky install",
+    "prepare": "husky",
     "eslint": "eslint . --fix",
     "lint": "lint-staged --allow-empty --config ./lintstagedrc.json",
     "up": "taze major -I"
