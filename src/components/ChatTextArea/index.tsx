@@ -2,6 +2,7 @@ import { useRef, useEffect } from 'react'
 import { Box, Paperclip, Send } from 'lucide-react'
 import { StopIcon } from './StopIcon'
 import { Button } from '@/components/ui/button'
+import { AudioRecorder } from '../AudioRecorder'
 
 interface ChatTextAreaProps {
   value: string
@@ -64,6 +65,12 @@ export function ChatTextArea({
     textareaRef.current?.focus()
   }, [])
 
+  const sendAudio = async (audio: Blob) => {
+    console.log(audio)
+  }
+  const cancelAudio = () => {
+    console.log('取消录音')
+  }
   return (
     <div className="relative w-full">
       <div className="w-full flex flex-col rounded-xl border shadow-sm overflow-hidden bg-neutral-50 dark:bg-primary-foreground">
@@ -77,19 +84,16 @@ export function ChatTextArea({
           placeholder="输入问题"
         />
         <div className="flex items-center gap-1 justify-end pr-2 pb-2">
+          <AudioRecorder sendAudio={sendAudio} cancelAudio={cancelAudio} />
           <Button
             variant="ghost"
             title="工作台"
             size="icon"
-            className="text-gray-400 hover:text-gray-600"
-            onClick={() => setIsWorkspace(true)}>
+            className=" hover:text-gray-600"
+            onClick={() => setIsWorkspace?.(true)}>
             <Box className="!size-5" />
           </Button>
-          <Button
-            variant="ghost"
-            title="附件"
-            size="icon"
-            className="text-gray-400 hover:text-gray-600">
+          <Button variant="ghost" title="附件" size="icon" className=" hover:text-gray-600">
             <Paperclip className="!size-5" />
           </Button>
           <Button
@@ -97,7 +101,7 @@ export function ChatTextArea({
             variant="ghost"
             title="发送"
             size="icon"
-            className="text-gray-400 hover:text-gray-600"
+            className=" hover:text-gray-600"
             onClick={handleSend}>
             {!loading ? <Send className="!size-5" /> : <StopIcon className="!size-8" />}
           </Button>
