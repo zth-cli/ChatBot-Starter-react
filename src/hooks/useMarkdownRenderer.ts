@@ -4,28 +4,57 @@ import MarkdownIt from 'markdown-it'
 import markdownItTexMath from 'markdown-it-texmath'
 import markdownitExternalLink from 'markdown-it-external-link'
 
-// 创建一个单例 MarkdownIt 实例
-const createMarkdownInstance = () => {
-  const md = new MarkdownIt({ html: true, breaks: true, linkify: true })
+interface MarkdownConfig {
+  html: boolean
+  breaks: boolean
+  linkify: boolean
+  externalLink: {
+    target: string
+  }
+  katexOptions: {
+    throwOnError: boolean
+    displayMode: boolean
+  }
+}
 
-  md.use(markdownitExternalLink, {
+const DEFAULT_CONFIG: MarkdownConfig = {
+  html: true,
+  breaks: true,
+  linkify: true,
+  externalLink: {
     target: '_blank'
+  },
+  katexOptions: {
+    throwOnError: false,
+    displayMode: false
+  }
+}
+// 创建一个单例 MarkdownIt 实例
+const createMarkdownInstance = (config: MarkdownConfig = DEFAULT_CONFIG) => {
+  const md = new MarkdownIt({
+    html: config.html,
+    breaks: config.breaks,
+    linkify: config.linkify
   })
 
+  md.use(markdownitExternalLink, config.externalLink)
   md.use(markdownItTexMath, {
     engine: katex,
     delimiters: 'brackets',
-    katexOptions: {
-      throwOnError: false,
-      displayMode: false
-    }
+    katexOptions: config.katexOptions
   })
+  // 自定义处理的代码块渲染
   md.renderer.rules.fence = (tokens, idx, options, env, self) => {
-    const token = tokens[idx]
-    const code = token.content.trim() || 'plaintext'
-    const language = token.info.trim()
+    try {
+      const token = tokens[idx]
+      const code = token.content.trim() || 'plaintext'
+      const language = token.info.trim()
 
-    return `<CodeBlock-${language}-${encodeURIComponent(code)}>`
+      return `<CodeBlock-${language}-${encodeURIComponent(code)}>`
+    } catch (error) {
+      console.error('Error rendering code block:', error)
+      return '<CodeBlock-plaintext-代码块渲染错误>'
+    }
   }
 
   return md
@@ -40,3 +69,4 @@ export function useMarkdownRenderer() {
 
   return { md }
 }
+export type { MarkdownConfig }

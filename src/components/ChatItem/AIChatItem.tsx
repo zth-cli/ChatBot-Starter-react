@@ -8,6 +8,7 @@ import { ChatMessage, MessageStatus } from '@/chatbot/main/types'
 import { useMemo } from 'react'
 import RenderMarkdown from '../RenderMarkdown'
 import MarkdownParser from '@/mdParser/MarkdownParser'
+import { AlertCircle } from 'lucide-react'
 
 interface AIChatItemProps {
   item: ChatMessage
@@ -33,9 +34,11 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
   // 是否是插件类型
   const isPlugin = useMemo(() => Boolean(item?.toolCalls?.type), [item?.toolCalls?.type])
   // 状态判断
+  const isError = useMemo(() => item.status === MessageStatus.ERROR, [item.status])
   const isPending = useMemo(() => item.status === MessageStatus.PENDING, [item.status])
   const isLoading = useMemo(() => item.status === MessageStatus.STREAMING, [item.status])
   const { removeChatMessageById } = useChatStore()
+
   const handleSelect = (action: MoreActionItem) => {
     switch (action.value) {
       case 'copy':
@@ -56,7 +59,8 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
         className={cn(
           'text-xs text-black/50 dark:text-foreground',
           !showActionAlways ? 'opacity-0 group-hover/ai:opacity-100' : 'opacity-100'
-        )}>
+        )}
+      >
         <div className="rounded flex gap-4 items-center cursor-pointer mt-2">
           {needRefresh && <Refresh item={item} onClick={onRegenerateMessage} />}
           <CopyX id={item.id} />
@@ -67,11 +71,20 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
       </div>
     )
   }
+  // 错误提示
+  const renderError = () => (
+    <div className="flex items-center gap-2 text-destructive mt-2">
+      <AlertCircle className="w-4 h-4" />
+      <span>抱歉，生成回答时出现了错误，请重试</span>
+    </div>
+  )
 
   return (
     <div className="w-full flex flex-col items-start group/ai gap-2">
       {render?.()}
       {isPlugin && <p>插件</p>}
+      {/* 添加错误状态显示 */}
+      {isError && renderError()}
       {item.content ? (
         // <MarkdownParser markdown={item.content} loading={isLoading} />
         <RenderMarkdown markdown={item.content} id={item.id} loading={isLoading} />
