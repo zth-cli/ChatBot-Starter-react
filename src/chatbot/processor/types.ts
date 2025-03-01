@@ -49,5 +49,5 @@ export interface GeminiStreamChunk {
 export enum ProcessorType {
   OPENAI = 'openai',
   OLLAMA = 'ollama',
-  GEMINI = 'gemini',
+  GEMINI = 'gemini'
 }

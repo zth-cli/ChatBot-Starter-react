@@ -37,7 +37,7 @@ export class OllamaStreamProcessor extends BaseStreamProcessor {
           await this.handleError(error)
           controller.error(error)
         }
-      },
+      }
     })
   }
 }
