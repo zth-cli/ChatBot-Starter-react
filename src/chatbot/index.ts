@@ -17,6 +17,7 @@ import {
 const DEFAULT_CONFIG: ChatConfig = {
   maxRetries: 3,
   retryDelay: 1000,
+  streamResponse: false,
   typingDelay: {
     min: 10,
     max: 20

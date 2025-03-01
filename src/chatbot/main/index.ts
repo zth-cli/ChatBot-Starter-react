@@ -4,6 +4,15 @@ import { ChatApiClient } from './ChatApiClient'
 import { NetworkError } from './ChatError'
 import { sleep } from './helper'
 
+const DEFAULT_CONFIG: ChatConfig = {
+  maxRetries: 3,
+  retryDelay: 1000,
+  streamResponse: false,
+  typingDelay: {
+    min: 10,
+    max: 20
+  }
+}
 export class ChatCore {
   private currentMessage: ChatMessage | undefined
   private controller: AbortController
@@ -15,6 +24,8 @@ export class ChatCore {
     private messageHandler: MessageHandler,
     private apiClient: ChatApiClient
   ) {
+    // 合并默认配置
+    this.config = { ...DEFAULT_CONFIG, ...config }
     this.controller = new AbortController()
     this.streamProcessor = new StreamProcessor({
       onStart: () => this.handleStart(),
@@ -73,14 +84,21 @@ export class ChatCore {
 
   private async appendTokenWithDelay(token: string) {
     const chars = token.split('')
-    for (const char of chars) {
-      this.currentMessage!.content += char
+    if (this.config.streamResponse) {
+      // 逐字显示
+      for (const char of chars) {
+        this.currentMessage!.content += char
+        await this.messageHandler.onToken(this.currentMessage!)
+        await sleep(
+          Math.random() * (this.config.typingDelay.max - this.config.typingDelay.min) +
+            this.config.typingDelay.min,
+          this.controller.signal
+        )
+      }
+    } else {
+      // 直接显示完整内容
+      this.currentMessage!.content += token
       await this.messageHandler.onToken(this.currentMessage!)
-      await sleep(
-        Math.random() * (this.config.typingDelay.max - this.config.typingDelay.min) +
-          this.config.typingDelay.min,
-        this.controller.signal
-      )
     }
   }
 
