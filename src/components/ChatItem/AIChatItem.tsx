@@ -38,7 +38,7 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
   const isError = useMemo(() => item.status === MessageStatus.ERROR, [item.status])
   const isPending = useMemo(() => item.status === MessageStatus.PENDING, [item.status])
   const isLoading = useMemo(() => item.status === MessageStatus.STREAMING, [item.status])
-  const isError = useMemo(() => item.status === MessageStatus.ERROR, [item.status])
+
   const { removeChatMessageById } = useChatStore()
 
   const handleSelect = (action: MoreActionItem) => {
