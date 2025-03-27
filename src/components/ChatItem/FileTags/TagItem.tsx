@@ -1,7 +1,7 @@
 import { MimeType, ImageMimeTypes } from '@/chatbot/constants/mimeTypes'
 import { X } from 'lucide-react'
 import { cn, isFileOrBlobInstance } from '@/lib'
-import { UploadFileInfo } from '@/chatbot/main/types'
+import { UploadFileInfo } from '@/chatbot/types'
 import { useEffect, useMemo, useState } from 'react'
 
 interface TagItemProps {
@@ -78,7 +78,8 @@ export const TagItem: React.FC<TagItemProps> = ({
       className={cn(
         'relative flex items-start gap-2 cursor-pointer bg-black/5 dark:bg-neutral-900 rounded-lg',
         isImageType ? 'p-1' : 'p-3 py-2'
-      )}>
+      )}
+    >
       {isImageType ? (
         <img src={base64Url as string} alt="" className="w-14 aspect-square rounded-lg" />
       ) : (
@@ -99,7 +100,8 @@ export const TagItem: React.FC<TagItemProps> = ({
       {showClose && (
         <p
           onClick={onClose}
-          className="absolute right-[-4px] top-[-4px] bg-red-500 rounded-full text-white">
+          className="absolute right-[-4px] top-[-4px] bg-red-500 rounded-full text-white"
+        >
           <X className="w-3 h-3" />
         </p>
       )}

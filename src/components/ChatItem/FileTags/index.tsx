@@ -1,6 +1,6 @@
 import { cn } from '@/lib'
 import { TagItem } from './TagItem'
-import { UploadFileInfo } from '@/chatbot/main/types'
+import { UploadFileInfo } from '@/chatbot/types'
 
 interface FileTagsProps {
   attachments?: (UploadFileInfo & { size?: number })[]
@@ -14,7 +14,8 @@ export const FileTags: React.FC<FileTagsProps> = ({ attachments = [] }) => {
         attachments?.length < 3
           ? `grid-cols-${attachments?.length}`
           : 'lg:grid-cols-3 md:grid-cols-2 grid-cols-1'
-      )}>
+      )}
+    >
       {attachments?.map(item => <TagItem key={item.id} fileInfo={item} showClose={false} />)}
     </div>
   )

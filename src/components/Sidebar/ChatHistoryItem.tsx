@@ -1,4 +1,4 @@
-import { ChatHistory } from '@/chatbot/main/types'
+import { ChatHistory } from '@/chatbot/types'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { MessageSquare } from 'lucide-react'
@@ -20,7 +20,8 @@ export function ChatHistoryItem({ item, className, onClick, children }: ChatHist
         'group/item text-gray-500 hover:text-gray-500',
         'flex items-center',
         className
-      )}>
+      )}
+    >
       <MessageSquare className="mr-2 h-4 w-4" />
       <span className="truncate flex-1 text-left mr-2">{item?.name}</span>
       <div className="flex-shrink-0 size-4 opacity-0 group-hover/item:opacity-100 transition-opacity">

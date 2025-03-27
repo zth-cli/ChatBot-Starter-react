@@ -1,5 +1,5 @@
 import { BaseStreamProcessor } from './BaseStreamProcessor'
-import { GeminiStreamChunk } from './types'
+import { GeminiStreamChunk } from '../types'
 
 export class GeminiStreamProcessor extends BaseStreamProcessor {
   createTransformStream(): TransformStream<string, string> {
@@ -39,10 +39,10 @@ export class GeminiStreamProcessor extends BaseStreamProcessor {
                     function: {
                       name: json.candidates[0].content.parts[0].functionCall.name,
                       arguments: JSON.stringify(
-                        json.candidates[0].content.parts[0].functionCall.args,
-                      ),
-                    },
-                  },
+                        json.candidates[0].content.parts[0].functionCall.args
+                      )
+                    }
+                  }
                 ]
                 await this.handleToolCall(toolCalls)
               }
@@ -56,7 +56,7 @@ export class GeminiStreamProcessor extends BaseStreamProcessor {
           await this.handleError(error)
           controller.error(error)
         }
-      },
+      }
     })
   }
 }

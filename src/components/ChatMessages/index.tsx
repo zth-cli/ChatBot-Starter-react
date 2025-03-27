@@ -1,7 +1,7 @@
 import { useRef, useEffect, useMemo } from 'react'
 import ChatLoadingDots from '@/components/ChatLoadingDots'
 import ChatItem from '@/components/ChatItem'
-import { ChatMessage } from '@/chatbot/main/types'
+import { ChatMessage } from '@/chatbot/types'
 import { FloatButton } from './FloatButton'
 import { VList, VListHandle } from 'virtua'
 

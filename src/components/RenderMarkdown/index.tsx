@@ -39,7 +39,8 @@ const RenderMarkdown: React.FC<MarkdownParserProps> = ({ markdown, loading }) =>
     <div className="relative">
       <div
         ref={containerRef}
-        className="md_container text-black/85 dark:text-foreground text-sm sm:text-base tracking-wide leading-normal sm:leading-7">
+        className="md_container text-black/85 dark:text-foreground text-sm sm:text-base tracking-wide leading-normal sm:leading-7 animate-fade-in"
+      >
         {parsedContent}
       </div>
       {loading && (

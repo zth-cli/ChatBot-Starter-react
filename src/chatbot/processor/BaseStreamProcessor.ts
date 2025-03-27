@@ -1,4 +1,4 @@
-import { ToolCall, StreamProcessorHandlers } from './types'
+import { ToolCall, StreamProcessorHandlers } from '../types'
 
 /**
  * 基础流处理器抽象类
@@ -8,6 +8,7 @@ export abstract class BaseStreamProcessor {
   protected currentToolCalls: ToolCall[] = []
   protected buffer = ''
   protected isFinished = false
+  protected isReasoning = false
 
   constructor(protected handlers: StreamProcessorHandlers) {}
 
@@ -37,8 +38,24 @@ export abstract class BaseStreamProcessor {
   }
 
   protected async handleToken(content: string) {
-    this.fullText += content
-    await this.handlers.onToken?.(content)
+    // 如果包含了<think>，则是开始推理，触发handleReasoningContent，知道遇到</think>，推理结束
+    if (content.includes('<think>')) {
+      this.isReasoning = true
+    } else if (content.includes('</think>')) {
+      this.isReasoning = false
+    }
+    if (!this.isReasoning) {
+      this.fullText += content
+      await this.handlers.onToken?.(content)
+    } else if (this.isReasoning) {
+      this.fullText = ''
+      content = content.replace('<think>', '').replace('</think>', '')
+      await this.handleReasoningContent(content)
+    }
+  }
+
+  protected async handleReasoningContent(content: string) {
+    await this.handlers.onReasoningContent?.(content)
   }
 
   protected async handleToolCall(toolCalls: ToolCall[]) {

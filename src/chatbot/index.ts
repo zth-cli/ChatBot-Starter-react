@@ -11,7 +11,7 @@ import {
   MessageHandler,
   MessageStatus,
   UseChatHookFn
-} from './main/types'
+} from './types'
 
 // 默认配置常量
 const DEFAULT_CONFIG: ChatConfig = {
@@ -41,7 +41,7 @@ const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage
   content,
   status: role === 'user' ? MessageStatus.COMPLETE : MessageStatus.PENDING,
   date: new Date().toISOString(),
-  ...(role === 'assistant' && { toolCalls: [], toolResults: [], likeStatus: 0 })
+  ...(role === 'assistant' && { toolCalls: [], toolResults: undefined, likeStatus: 0 })
 })
 
 export const useChat: UseChatHookFn = () => {
@@ -72,6 +72,9 @@ export const useChat: UseChatHookFn = () => {
         return newMessage
       },
       onToken: message => {
+        chatStore.updateCurrentChatMessage(message)
+      },
+      onReasoningContent: message => {
         chatStore.updateCurrentChatMessage(message)
       },
       onComplete: message => {
@@ -167,7 +170,8 @@ export const useChat: UseChatHookFn = () => {
         })
         await chatCore?.sendMessage<ChatPayload>({
           chatFlowId: import.meta.env.VITE_CHAT_FLOW_ID,
-          messages: [{ role: 'user', content: userMessage }]
+          messages: [{ role: 'user', content: userMessage }],
+          sessionId: chatId
         })
       }
     },

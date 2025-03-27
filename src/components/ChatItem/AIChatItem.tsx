@@ -4,10 +4,12 @@ import { useChatStore } from '@/stores/useChatStore'
 import { CopyX, MoreActions, Refresh, MoreActionItem } from './ActionBar'
 import { cn } from '@/lib/utils'
 import { ThumbsUpOrDown } from './ThumbsUpOrDown'
-import { ChatMessage, MessageStatus } from '@/chatbot/main/types'
+import { ChatMessage, MessageStatus } from '@/chatbot/types'
 import { useMemo } from 'react'
 import RenderMarkdown from '../RenderMarkdown'
+import ReasoningContent from './ReasoningContent'
 import MarkdownParser from '@/mdParser/MarkdownParser'
+import { AlertCircle } from 'lucide-react'
 
 interface AIChatItemProps {
   item: ChatMessage
@@ -35,6 +37,7 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
   // 状态判断
   const isPending = useMemo(() => item.status === MessageStatus.PENDING, [item.status])
   const isLoading = useMemo(() => item.status === MessageStatus.STREAMING, [item.status])
+  const isError = useMemo(() => item.status === MessageStatus.ERROR, [item.status])
   const { removeChatMessageById } = useChatStore()
   const handleSelect = (action: MoreActionItem) => {
     switch (action.value) {
@@ -56,7 +59,8 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
         className={cn(
           'text-xs text-black/50 dark:text-foreground',
           !showActionAlways ? 'opacity-0 group-hover/ai:opacity-100' : 'opacity-100'
-        )}>
+        )}
+      >
         <div className="rounded flex gap-4 items-center cursor-pointer mt-2">
           {needRefresh && <Refresh item={item} onClick={onRegenerateMessage} />}
           <CopyX id={item.id} />
@@ -67,11 +71,21 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
       </div>
     )
   }
+  // 错误提示
+  const renderError = () => (
+    <div className="flex items-center gap-2 text-destructive mt-2">
+      <AlertCircle className="w-4 h-4" />
+      <span>抱歉，生成回答时出现了错误，请重试</span>
+    </div>
+  )
 
   return (
     <div className="w-full flex flex-col items-start group/ai gap-2">
+      {item?.thinkContent && <ReasoningContent content={item?.thinkContent} />}
       {render?.()}
       {isPlugin && <p>插件</p>}
+      {/* 添加错误状态显示 */}
+      {isError && renderError()}
       {item.content ? (
         // <MarkdownParser markdown={item.content} loading={isLoading} />
         <RenderMarkdown markdown={item.content} id={item.id} loading={isLoading} />

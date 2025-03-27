@@ -3,7 +3,7 @@ import { useChatStore } from '@/stores/useChatStore'
 import { FileTags } from './FileTags'
 import { Del } from './ActionBar'
 import { Copy } from '@/components/Copy'
-import { ChatMessage } from '@/chatbot/main/types'
+import { ChatMessage } from '@/chatbot/types'
 
 interface UserChatItemProps {
   item: ChatMessage
@@ -26,7 +26,8 @@ export const UserChatItem: React.FC<UserChatItemProps> = ({ item }) => {
               'bg-primary text-primary-foreground',
               'break-words whitespace-pre-wrap',
               'max-w-[300px] md:max-w-[450px]'
-            )}>
+            )}
+          >
             {item.content}
           </div>
         </div>
@@ -35,7 +36,8 @@ export const UserChatItem: React.FC<UserChatItemProps> = ({ item }) => {
         <div
           className={cn(
             'rounded flex gap-2 items-center cursor-pointer mt-2 opacity-0 group-hover/chat:opacity-100'
-          )}>
+          )}
+        >
           <Copy content={item.content} />
           <Del onClick={() => removeChatMessageById(item.id)} />
         </div>
