@@ -13,7 +13,7 @@ export class AudioRecorderService {
       // 尝试获取麦克风权限
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       // 获取成功后立即停止所有轨道
-      stream.getTracks().forEach((track) => track.stop())
+      stream.getTracks().forEach(track => track.stop())
       return true
     } catch (error) {
       return false
@@ -25,7 +25,7 @@ export class AudioRecorderService {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       this.mediaRecorder = new MediaRecorder(this.stream)
 
-      this.mediaRecorder.ondataavailable = (event) => {
+      this.mediaRecorder.ondataavailable = event => {
         if (event.data.size > 0) {
           this.chunks.push(event.data)
         }
@@ -49,7 +49,7 @@ export class AudioRecorderService {
         const blob = new Blob(this.chunks, { type: 'audio/webm' })
         this.chunks = []
         if (this.stream) {
-          this.stream.getTracks().forEach((track) => track.stop())
+          this.stream.getTracks().forEach(track => track.stop())
           this.stream = null
         }
         resolve(blob)

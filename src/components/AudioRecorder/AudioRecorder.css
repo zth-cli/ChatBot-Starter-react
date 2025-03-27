@@ -6,10 +6,22 @@
 }
 
 @keyframes wave {
-  0% { transform: scaleY(0.5); }
-  20% { transform: scaleY(1); }
-  40% { transform: scaleY(1.5); }
-  60% { transform: scaleY(1); }
-  80% { transform: scaleY(0.5); }
-  100% { transform: scaleY(0.5); }
+  0% {
+    transform: scaleY(0.5);
+  }
+  20% {
+    transform: scaleY(1);
+  }
+  40% {
+    transform: scaleY(1.5);
+  }
+  60% {
+    transform: scaleY(1);
+  }
+  80% {
+    transform: scaleY(0.5);
+  }
+  100% {
+    transform: scaleY(0.5);
+  }
 }
