@@ -134,6 +134,7 @@ export interface MessageHandler {
 export interface ChatConfig {
   maxRetries: number
   retryDelay: number
+  streamResponse: boolean // 控制是否逐字显示
   typingDelay: {
     min: number
     max: number

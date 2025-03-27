@@ -35,10 +35,12 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
   // 是否是插件类型
   const isPlugin = useMemo(() => Boolean(item?.toolCalls?.type), [item?.toolCalls?.type])
   // 状态判断
+  const isError = useMemo(() => item.status === MessageStatus.ERROR, [item.status])
   const isPending = useMemo(() => item.status === MessageStatus.PENDING, [item.status])
   const isLoading = useMemo(() => item.status === MessageStatus.STREAMING, [item.status])
   const isError = useMemo(() => item.status === MessageStatus.ERROR, [item.status])
   const { removeChatMessageById } = useChatStore()
+
   const handleSelect = (action: MoreActionItem) => {
     switch (action.value) {
       case 'copy':
@@ -59,8 +61,7 @@ export const AIChatItem: React.FC<AIChatItemProps> = ({
         className={cn(
           'text-xs text-black/50 dark:text-foreground',
           !showActionAlways ? 'opacity-0 group-hover/ai:opacity-100' : 'opacity-100'
-        )}
-      >
+        )}>
         <div className="rounded flex gap-4 items-center cursor-pointer mt-2">
           {needRefresh && <Refresh item={item} onClick={onRegenerateMessage} />}
           <CopyX id={item.id} />

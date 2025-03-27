@@ -37,9 +37,9 @@ export default [
       'arrow-body-style': 'off',
       'prefer-arrow-callback': 'off',
       'react-hooks/exhaustive-deps': 'warn', // 或 "off"
-      '@typescript-eslint/no-unused-vars': 'warn', // 或 "off"
       '@typescript-eslint/no-this-alias': 'off',
       '@typescript-eslint/ban-ts-ignore': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-unused-expressions': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-unsafe-function-type': 'off',
