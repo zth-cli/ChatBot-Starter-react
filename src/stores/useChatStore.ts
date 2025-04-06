@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { ChatHistory, ChatMessage } from '@/chatbot/main/types'
+import { ChatHistory, ChatMessage } from '@/chatbot/types'
 
 interface ChatStore {
   // 状态

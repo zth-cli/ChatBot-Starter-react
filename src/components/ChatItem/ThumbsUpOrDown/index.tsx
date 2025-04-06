@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import { ThumbsDown, ThumbsUp } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { ChatMessage } from '@/chatbot/main/types'
+import { ChatMessage } from '@/chatbot/types'
 
 interface ThumbsUpOrDownProps {
   message: ChatMessage

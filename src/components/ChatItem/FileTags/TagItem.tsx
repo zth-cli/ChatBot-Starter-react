@@ -1,7 +1,7 @@
 import { MimeType, ImageMimeTypes } from '@/chatbot/constants/mimeTypes'
 import { X } from 'lucide-react'
 import { cn, isFileOrBlobInstance } from '@/lib'
-import { UploadFileInfo } from '@/chatbot/main/types'
+import { UploadFileInfo } from '@/chatbot/types'
 import { useEffect, useMemo, useState } from 'react'
 
 interface TagItemProps {

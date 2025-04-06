@@ -1,9 +1,18 @@
-import { ChatConfig, MessageHandler, ChatMessage, MessageStatus, ToolCall } from './types'
+import { ChatConfig, MessageHandler, ChatMessage, MessageStatus, ToolCall } from '../types'
 import { StreamProcessor } from './StreamProcessor'
 import { ChatApiClient } from './ChatApiClient'
 import { NetworkError } from './ChatError'
 import { sleep } from './helper'
 
+const DEFAULT_CONFIG: ChatConfig = {
+  maxRetries: 3,
+  retryDelay: 1000,
+  streamResponse: false,
+  typingDelay: {
+    min: 10,
+    max: 20
+  }
+}
 export class ChatCore {
   private currentMessage: ChatMessage | undefined
   private controller: AbortController
@@ -15,10 +24,13 @@ export class ChatCore {
     private messageHandler: MessageHandler,
     private apiClient: ChatApiClient
   ) {
+    // 合并默认配置
+    this.config = { ...DEFAULT_CONFIG, ...config }
     this.controller = new AbortController()
     this.streamProcessor = new StreamProcessor({
       onStart: () => this.handleStart(),
       onToken: token => this.handleToken(token),
+      onReasoningContent: reasoningContent => this.handleReasoningContent(reasoningContent),
       onToolCall: toolCalls => this.handleToolCall(toolCalls),
       onFinish: fullText => this.handleFinish(fullText),
       onError: error => this.handleError(error)
@@ -26,29 +38,28 @@ export class ChatCore {
   }
 
   async sendMessage<T extends { messages: any[]; [x: string]: any }>(
-    message: T,
+    payload: T,
     isRetry: boolean = false
   ): Promise<void> {
     if (!isRetry) {
-      this.currentMessage = this.messageHandler.onCreate()
+      this.currentMessage = this.currentMessage || this.messageHandler.onCreate()
     }
     this.controller = new AbortController()
-
     try {
-      const response = await this.apiClient.createChatStream(message, this.controller.signal)
-
+      const response = await this.apiClient.createChatStream(payload, this.controller.signal)
+      // await this.handleError(new NetworkError(`服务端错误: ${response.statusText}, 请稍后再试!`))
       if (!response.ok) {
+        await this.handleError(new NetworkError(`服务端错误: ${response.statusText}, 请稍后再试!`))
         throw new NetworkError(`HTTP error! status: ${response.status}`)
       }
 
       await this.streamProcessor.processStream(response)
-    } catch (error) {
+    } catch (error: any) {
       await this.handleError(error)
-
       // 重试逻辑
       if (error.retryable && this.retryCount < this.config.maxRetries) {
         this.retryCount++
-        await this.retry(message)
+        await this.retry(payload)
       }
     }
   }
@@ -56,7 +67,10 @@ export class ChatCore {
   public setCurrentMessage(message: ChatMessage): void {
     this.currentMessage = message
   }
-  private async retry<T extends { messages: any[]; [x: string]: any }>(message: T): Promise<void> {
+
+  private async retry<T extends { messages: any[]; sessionId: string; [x: string]: any }>(
+    message: T
+  ): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, this.config.retryDelay))
     return this.sendMessage(message, true)
   }
@@ -71,16 +85,55 @@ export class ChatCore {
     await this.appendTokenWithDelay(token)
   }
 
+  // 处理推理内容
+  private async handleReasoningContent(reasoningContent: string): Promise<void> {
+    if (!this.currentMessage) return
+    this.currentMessage.status = MessageStatus.STREAMING
+    if (this.currentMessage) {
+      // 此时content为空
+      this.currentMessage.content = ''
+      this.currentMessage.thinkContent = (this.currentMessage.thinkContent || '') + reasoningContent
+      await this.messageHandler?.onReasoningContent?.(this.currentMessage)
+    }
+  }
+  // private async handleReasoningContent(reasoningContent: string): Promise<void> {
+  //   if (!this.currentMessage) return
+  //   this.currentMessage.status = MessageStatus.STREAMING
+  //   if (this.currentMessage) {
+  //     // 此时content为空
+  //     this.currentMessage.content = ''
+  //     // 添加带延迟的思考内容追加效果
+  //     const chars = reasoningContent.split('')
+  //     for (const char of chars) {
+  //       this.currentMessage.thinkContent = (this.currentMessage.thinkContent || '') + char
+  //       await this.messageHandler?.onReasoningContent?.(this.currentMessage)
+
+  //       await sleep(
+  //         Math.random() * (this.config.typingDelay.max - this.config.typingDelay.min) +
+  //           this.config.typingDelay.min,
+  //         this.controller.signal
+  //       )
+  //     }
+  //   }
+  // }
+
   private async appendTokenWithDelay(token: string) {
     const chars = token.split('')
-    for (const char of chars) {
-      this.currentMessage!.content += char
+    if (this.config.streamResponse) {
+      // 逐字显示
+      for (const char of chars) {
+        this.currentMessage!.content += char
+        await this.messageHandler.onToken(this.currentMessage!)
+        await sleep(
+          Math.random() * (this.config.typingDelay.max - this.config.typingDelay.min) +
+            this.config.typingDelay.min,
+          this.controller.signal
+        )
+      }
+    } else {
+      // 直接显示完整内容
+      this.currentMessage!.content += token
       await this.messageHandler.onToken(this.currentMessage!)
-      await sleep(
-        Math.random() * (this.config.typingDelay.max - this.config.typingDelay.min) +
-          this.config.typingDelay.min,
-        this.controller.signal
-      )
     }
   }
 

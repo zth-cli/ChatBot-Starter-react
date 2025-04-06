@@ -12,6 +12,7 @@ export default () => {
   const { currentChatMessages, currentChatHistory, getChatHistoryById } = useChatStore()
   const [message, setMessage] = useState('')
 
+  // 更新 url 的 chatId
   useEffect(() => {
     if (currentChatHistory?.id) {
       const newUrl = `/chat/${currentChatHistory?.id}${window.location.search}`
@@ -47,7 +48,8 @@ export default () => {
         <ChatContainer
           isWorkspace={isWorkspace}
           onWorkspaceChange={setIsWorkspace}
-          workspace={<p>工作台</p>}>
+          workspace={<p>工作台</p>}
+        >
           <div className="flex flex-col h-full bg-background w-full">
             <ChatHeader />
             <div className="flex flex-col min-w-0 gap-6 flex-1 pt-4">

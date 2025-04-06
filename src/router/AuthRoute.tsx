@@ -17,7 +17,7 @@ const AuthRoute = ({ children }: any) => {
       // 如果你已经登录了，但是你通过浏览器里直接访问login的话不允许直接跳转到login路由，必须通过logout来控制退出登录或者是token过期返回登录界面
       navigate(location.pathname)
     }
-  }, [location.pathname, token])
+  }, [isExist, location.pathname, navigate, token])
 
   return children
 }

@@ -1,5 +1,5 @@
 import { AbortError, NetworkError } from './ChatError'
-import { MessageType, ToolCall } from './types'
+import { MessageType, ToolCall } from '../types'
 
 const CHAT_CONFIG = {
   CHAT_FLOW_ID: import.meta.env.VITE_CHAT_FLOW_ID,

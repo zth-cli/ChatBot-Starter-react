@@ -28,7 +28,7 @@ export function Sidebar() {
     <aside
       className={cn(
         // 基础样式
-        'fixed inset-y-0 z-10 h-full',
+        'fixed inset-y-0 z-10 h-full border-r',
         'transition-[left,right,width] ease-linear duration-200',
         // 响应式显示
         'flex',

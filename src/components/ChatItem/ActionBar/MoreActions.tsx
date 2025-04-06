@@ -9,7 +9,7 @@ import {
 import { cn } from '@/lib/utils'
 import { MoreHorizontal } from 'lucide-react'
 import { CopyX, Del, Refresh } from '.'
-import { ChatMessage } from '@/chatbot/main/types'
+import { ChatMessage } from '@/chatbot/types'
 
 export type MoreActionItem = {
   name: string

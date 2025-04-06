@@ -1,6 +1,6 @@
 import { ChatCore } from './main'
-import { useChatStore } from '@/stores/useChatStore'
 import { useCallback, useMemo } from 'react'
+import { useChatStore } from '@/stores/useChatStore'
 import { ChatApiClient, ChatPayload } from './main/ChatApiClient'
 import { ChatSessionManager } from './main/ChatSessionManager'
 
@@ -11,12 +11,13 @@ import {
   MessageHandler,
   MessageStatus,
   UseChatHookFn
-} from './main/types'
+} from './types'
 
 // 默认配置常量
 const DEFAULT_CONFIG: ChatConfig = {
   maxRetries: 3,
   retryDelay: 1000,
+  streamResponse: false,
   typingDelay: {
     min: 10,
     max: 20
@@ -41,7 +42,7 @@ const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage
   content,
   status: role === 'user' ? MessageStatus.COMPLETE : MessageStatus.PENDING,
   date: new Date().toISOString(),
-  ...(role === 'assistant' && { toolCalls: [], toolResults: [], likeStatus: 0 })
+  ...(role === 'assistant' && { toolCalls: [], toolResults: undefined, likeStatus: 0 })
 })
 
 export const useChat: UseChatHookFn = () => {
@@ -72,6 +73,9 @@ export const useChat: UseChatHookFn = () => {
         return newMessage
       },
       onToken: message => {
+        chatStore.updateCurrentChatMessage(message)
+      },
+      onReasoningContent: message => {
         chatStore.updateCurrentChatMessage(message)
       },
       onComplete: message => {
@@ -127,7 +131,7 @@ export const useChat: UseChatHookFn = () => {
         const chatCore = await sessionManagerRef.current?.getSession(chatId)
 
         apiClient.setApiClientHeaders({
-          ChatToken: import.meta.env.VITE_CHAT_TOKEN || '27ecabac-764e-4132-b4d2-fa50b7ec1b65'
+          ChatToken: import.meta.env.VITE_CHAT_TOKEN || '2d3689d3-8a12-49e6-a1e6-4b8069465551'
         })
 
         await chatCore?.sendMessage<ChatPayload>({
@@ -163,11 +167,12 @@ export const useChat: UseChatHookFn = () => {
         const userMessage = previousMessage.content
         const chatCore = await sessionManagerRef.current?.getSession(chatId)
         apiClient.setApiClientHeaders({
-          ChatToken: '27ecabac-764e-4132-b4d2-fa50b7ec1b65'
+          ChatToken: import.meta.env.VITE_CHAT_TOKEN
         })
         await chatCore?.sendMessage<ChatPayload>({
           chatFlowId: import.meta.env.VITE_CHAT_FLOW_ID,
-          messages: [{ role: 'user', content: userMessage }]
+          messages: [{ role: 'user', content: userMessage }],
+          sessionId: chatId
         })
       }
     },

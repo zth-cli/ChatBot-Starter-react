@@ -10,7 +10,7 @@ import {
   MessageHandler,
   MessageStatus,
   UseChatHookFn
-} from './main/types'
+} from './types'
 
 // 默认配置常量
 const DEFAULT_CONFIG: ChatConfig = {
@@ -19,7 +19,8 @@ const DEFAULT_CONFIG: ChatConfig = {
   typingDelay: {
     min: 10,
     max: 20
-  }
+  },
+  streamResponse: false
 }
 
 // 初始聊天历史状态
@@ -31,7 +32,6 @@ const createInitialChatHistory = (): ChatHistory => ({
   createTime: '',
   updateTime: ''
 })
-
 // 创建新消息
 const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage => ({
   id: crypto.randomUUID(),
@@ -39,7 +39,11 @@ const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage
   content,
   status: role === 'user' ? MessageStatus.COMPLETE : MessageStatus.PENDING,
   date: new Date().toISOString(),
-  ...(role === 'assistant' && { toolCalls: [], toolResults: [], likeStatus: 0 })
+  ...(role === 'assistant' && {
+    toolCalls: undefined,
+    toolResults: undefined,
+    likeStatus: 0
+  })
 })
 
 export const useChat: UseChatHookFn = () => {
@@ -53,7 +57,7 @@ export const useChat: UseChatHookFn = () => {
         `${baseUrl}/llm/skillCenter/plugin/chat/openai/formdata`,
         import.meta.env.VITE_API_KEY || '61c36ab3c518418b916a6ffc2190d170'
       ),
-    []
+    [baseUrl]
   )
 
   // 消息更新处理
@@ -136,7 +140,7 @@ export const useChat: UseChatHookFn = () => {
         const chatCore = await sessionManager.getSession(chatId)
 
         apiClient.setApiClientHeaders({
-          ChatToken: import.meta.env.VITE_CHAT_TOKEN || '27ecabac-764e-4132-b4d2-fa50b7ec1b65'
+          ChatToken: import.meta.env.VITE_CHAT_TOKEN || '2d3689d3-8a12-49e6-a1e6-4b8069465551'
         })
 
         await chatCore.sendMessage<ChatPayload>({

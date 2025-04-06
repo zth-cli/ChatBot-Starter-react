@@ -1,4 +1,4 @@
-import { ChatHistory } from '@/chatbot/main/types'
+import { ChatHistory } from '@/chatbot/types'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { MessageSquare } from 'lucide-react'

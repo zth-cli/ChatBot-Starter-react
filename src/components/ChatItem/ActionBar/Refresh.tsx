@@ -1,6 +1,6 @@
 import { RotateCcw } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { ChatMessage, MessageStatus } from '@/chatbot/main/types'
+import { ChatMessage, MessageStatus } from '@/chatbot/types'
 
 interface RefreshProps {
   item: ChatMessage

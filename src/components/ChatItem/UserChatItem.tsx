@@ -3,7 +3,7 @@ import { useChatStore } from '@/stores/useChatStore'
 import { FileTags } from './FileTags'
 import { Del } from './ActionBar'
 import { Copy } from '@/components/Copy'
-import { ChatMessage } from '@/chatbot/main/types'
+import { ChatMessage } from '@/chatbot/types'
 
 interface UserChatItemProps {
   item: ChatMessage

@@ -40,22 +40,33 @@ export interface ChatHistory {
    * @description: 是否收藏
    */
   isFavorite?: boolean
+  /**
+   * @description: 是否置顶
+   */
+  pinned?: boolean
 }
 
 export interface ChatMessage {
   id: string
   role: Role
+  /**
+   * @description: 消息内容
+   */
   content: string
+  /**
+   * @description: 思考内容
+   */
+  thinkContent?: string
   status: MessageStatus
   date: string
   toolCalls?: any
-  toolResults?: ToolResult[]
+  toolResults?: ToolResult
   parentMessageId?: string
   retryCount?: number
   /**
-   * @description: 用于展示提问时的附件(如果有)
+   * @description: 用于展示引用(附件，链接等)
    */
-  attachments?: Array<any>
+  quotes?: Quote
   /**
    * @description: 是否已阅读
    */
@@ -64,13 +75,18 @@ export interface ChatMessage {
    * @description: 推荐问题
    */
   suggestMessage?: {
-    data: string[]
     loading: boolean
+    data: string[]
   }
   /**
    * @description: 点赞点踩状态 0: 未点赞未点踩 1: 已点赞 -1: 已点踩
    */
   likeStatus?: 0 | 1 | -1
+}
+
+export type Quote = {
+  type: 'file' | 'link'
+  data: any[]
 }
 
 export enum MessageStatus {
@@ -81,27 +97,20 @@ export enum MessageStatus {
   STOP = 5
 }
 export type ToolCall = {
-  index: number
   id?: string
   type?: any
   function: {
     name: string
-    arguments: string
+    arguments?: string
   }
 }
 
 export interface ToolResult {
   toolCallId: string
   result: any
+  ui?: any
 }
 
-export type PluginRequestPayload = {
-  id?: string
-  apiName?: string
-  arguments: string
-  identifier?: string
-  type?: string
-}
 export interface ChatSession {
   id: string
   controller: AbortController
@@ -112,26 +121,20 @@ export interface ChatSession {
   lastError?: Error
 }
 
-export interface StreamProcessorHandlers {
-  onStart?: () => Promise<void> | void
-  onToken?: (token: string) => Promise<void> | void
-  onToolCall?: (toolCall: ToolCall[]) => Promise<void> | void
-  onFinish?: (fullText: string) => Promise<void> | void
-  onError?: (error: any) => Promise<void> | void
-}
-
 export interface MessageHandler {
   onCreate: () => ChatMessage
-  onToolCall?: (message: ChatMessage, toolCalls: ToolCall[]) => void
-  onToken: (message: ChatMessage) => void
-  onComplete: (message: ChatMessage) => void
-  onStop: (message: ChatMessage) => void
-  onError: (message: ChatMessage, error: Error) => void
+  onReasoningContent?: (message: ChatMessage) => Promise<void> | void
+  onToolCall?: (message: ChatMessage, toolCalls: ToolCall[]) => Promise<void> | void
+  onToken: (message: ChatMessage) => Promise<void> | void
+  onComplete: (message: ChatMessage) => Promise<void> | void
+  onStop: (message: ChatMessage) => Promise<void> | void
+  onError: (message: ChatMessage, error: Error) => Promise<void> | void
 }
 
 export interface ChatConfig {
   maxRetries: number
   retryDelay: number
+  streamResponse: boolean // 控制是否逐字显示
   typingDelay: {
     min: number
     max: number
@@ -167,6 +170,7 @@ export type UseChatParams = {
    * @description 滚动到底部
    */
   scrollToBottom?: () => void
+  tools?: any
 }
 export type ChatHook = {
   /**

@@ -1,6 +1,6 @@
 import { cn } from '@/lib'
 import { TagItem } from './TagItem'
-import { UploadFileInfo } from '@/chatbot/main/types'
+import { UploadFileInfo } from '@/chatbot/types'
 
 interface FileTagsProps {
   attachments?: (UploadFileInfo & { size?: number })[]

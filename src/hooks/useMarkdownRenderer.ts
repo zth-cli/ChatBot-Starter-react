@@ -1,39 +1,61 @@
 import { useMemo } from 'react'
 import katex from 'katex'
-import { createShiki, shiki } from '@/lib/singletonShiki'
 import MarkdownIt from 'markdown-it'
 import markdownItTexMath from 'markdown-it-texmath'
 import markdownitExternalLink from 'markdown-it-external-link'
-import { Token } from 'markdown-it/index.js'
 
-// 创建一个单例 MarkdownIt 实例
-let isShikiReady = false
-const createMarkdownInstance = () => {
-  const md = new MarkdownIt({ html: true, breaks: true, linkify: true })
+interface MarkdownConfig {
+  html: boolean
+  breaks: boolean
+  linkify: boolean
+  externalLink: {
+    target: string
+  }
+  katexOptions: {
+    throwOnError: boolean
+    displayMode: boolean
+  }
+}
 
-  md.use(markdownitExternalLink, {
+const DEFAULT_CONFIG: MarkdownConfig = {
+  html: true,
+  breaks: true,
+  linkify: true,
+  externalLink: {
     target: '_blank'
+  },
+  katexOptions: {
+    throwOnError: false,
+    displayMode: false
+  }
+}
+// 创建一个单例 MarkdownIt 实例
+const createMarkdownInstance = (config: MarkdownConfig = DEFAULT_CONFIG) => {
+  const md = new MarkdownIt({
+    html: config.html,
+    breaks: config.breaks,
+    linkify: config.linkify
   })
 
+  md.use(markdownitExternalLink, config.externalLink)
   md.use(markdownItTexMath, {
     engine: katex,
     delimiters: 'brackets',
-    katexOptions: {
-      throwOnError: false,
-      displayMode: false
-    }
+    katexOptions: config.katexOptions
   })
-  // const shikiInstance = shiki || (await createShiki())
-  // md.use(shikiInstance)
-  isShikiReady = true
-  // 优化 fence 渲染规则
-  // md.renderer.rules.fence = (tokens: Token[], idx: number) => {
-  //   const token = tokens[idx]
-  //   // return `<div class="react-code-block" data-code="${encodeURIComponent(token.content)}" data-lang="${token.info.trim()}"></div>`
-  //   return `<div class='w-full overflow-auto'>
-  //   <pre class='p-4 bg-gray-100 dark:bg-gray-800 rounded-md'><code class="language-${token.info.trim()}">${token.content}</code></pre>
-  //   </div>`
-  // }
+  // 自定义处理的代码块渲染
+  md.renderer.rules.fence = (tokens, idx) => {
+    try {
+      const token = tokens[idx]
+      const code = token.content.trim() || 'plaintext'
+      const language = token.info.trim()
+
+      return `<CodeBlock-${language}-${encodeURIComponent(code)}>`
+    } catch (error) {
+      console.error('Error rendering code block:', error)
+      return '<CodeBlock-plaintext-代码块渲染错误>'
+    }
+  }
 
   return md
 }
@@ -45,5 +67,6 @@ export function useMarkdownRenderer() {
   // 使用 useMemo 缓存实例
   const md = useMemo(() => mdInstance, [])
 
-  return { md, shikiReady: isShikiReady }
+  return { md }
 }
+export type { MarkdownConfig }
