@@ -59,7 +59,7 @@ const Home: React.FC = () => {
   return (
     <div>
       <h1>Markdown Parser Demo</h1>
-      <MarkdownParser markdown={markdownContent} />
+      <MarkdownParser markdown={markdownContent} loading={false} />
     </div>
   )
 }
