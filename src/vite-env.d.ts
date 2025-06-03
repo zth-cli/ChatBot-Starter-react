@@ -7,3 +7,5 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 declare module 'markdown-it-texmath'
+
+// declare module 'hast'

@@ -33,9 +33,10 @@ export function Sidebar() {
         // 响应式显示
         'flex',
         // 宽度控制
-        'w-[--sidebar-width] left-0',
+        'w-[var(--sidebar-width)] left-0',
         'group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
-      )}>
+      )}
+    >
       <div className="flex h-full w-full flex-col">
         {/* 顶部标题栏 */}
         <div className="flex h-14 items-center border-b px-4">

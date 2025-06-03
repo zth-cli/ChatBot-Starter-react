@@ -6,7 +6,7 @@ export function SidebarSheet() {
   const { isCollapsed, toggleCollapse } = useSidebar()
   return (
     <Sheet open={!isCollapsed} onOpenChange={toggleCollapse}>
-      <SheetContent side="left" className="p-0 w-[--sidebar-width]">
+      <SheetContent side="left" className="p-0 w-[var(--sidebar-width)]">
         <Sidebar />
       </SheetContent>
     </Sheet>

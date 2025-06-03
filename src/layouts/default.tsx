@@ -9,7 +9,7 @@ const Layout = () => {
     <>
       <div className="group flex w-full h-screen" data-collapsible={isCollapsed ? 'offcanvas' : ''}>
         <div className="hidden md:block group">
-          <div className="translate-[width] duration-200 ease-linear h-full w-0 md:w-[--sidebar-width] group-data-[collapsible=offcanvas]:w-0 relative bg-primary/5">
+          <div className="translate-[width] duration-200 ease-linear h-full w-0 md:w-[var(--sidebar-width)] group-data-[collapsible=offcanvas]:w-0 relative bg-primary/5">
             {/* 侧边栏 */}
             <Sidebar />
           </div>

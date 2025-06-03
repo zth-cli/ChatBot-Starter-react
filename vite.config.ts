@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import AutoImport from 'unplugin-auto-import/vite'
 import Inspect from 'vite-plugin-inspect'
@@ -8,6 +9,7 @@ import Inspect from 'vite-plugin-inspect'
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(),
     Inspect(),
     AutoImport({
       include: [
