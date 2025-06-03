@@ -10,7 +10,7 @@ import {
   MessageHandler,
   MessageStatus,
   UseChatHookFn
-} from './main/types'
+} from './types'
 
 // 默认配置常量
 const DEFAULT_CONFIG: ChatConfig = {
@@ -19,7 +19,8 @@ const DEFAULT_CONFIG: ChatConfig = {
   typingDelay: {
     min: 10,
     max: 20
-  }
+  },
+  streamResponse: false
 }
 
 // 初始聊天历史状态
@@ -31,7 +32,6 @@ const createInitialChatHistory = (): ChatHistory => ({
   createTime: '',
   updateTime: ''
 })
-
 // 创建新消息
 const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage => ({
   id: crypto.randomUUID(),
@@ -39,7 +39,11 @@ const createMessage = (role: 'user' | 'assistant', content: string): ChatMessage
   content,
   status: role === 'user' ? MessageStatus.COMPLETE : MessageStatus.PENDING,
   date: new Date().toISOString(),
-  ...(role === 'assistant' && { toolCalls: [], toolResults: [], likeStatus: 0 })
+  ...(role === 'assistant' && {
+    toolCalls: undefined,
+    toolResults: undefined,
+    likeStatus: 0
+  })
 })
 
 export const useChat: UseChatHookFn = () => {
@@ -53,7 +57,7 @@ export const useChat: UseChatHookFn = () => {
         `${baseUrl}/llm/skillCenter/plugin/chat/openai/formdata`,
         import.meta.env.VITE_API_KEY || '61c36ab3c518418b916a6ffc2190d170'
       ),
-    []
+    [baseUrl]
   )
 
   // 消息更新处理
