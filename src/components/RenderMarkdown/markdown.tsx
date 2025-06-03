@@ -31,9 +31,9 @@ export function Markdown({
   const components: ReactMarkdownOptions['components'] = useMemo(() => {
     return {
       code: (props: any) => {
-        const { inline, className, children, ...rest } = props
+        const { className, children, ...rest } = props
         const match = /language-(\w+)/.exec(className || '')
-        if (inline) {
+        if (!match) {
           // 行内代码
           return (
             <code className={className} {...rest}>
